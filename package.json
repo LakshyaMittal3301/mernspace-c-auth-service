@@ -1,0 +1,21 @@
+{
+  "name": "auth-service",
+  "version": "1.0.0",
+  "description": "User management service",
+  "homepage": "https://github.com/LakshyaMittal3301/mernspace-c-auth-service#readme",
+  "bugs": {
+    "url": "https://github.com/LakshyaMittal3301/mernspace-c-auth-service/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LakshyaMittal3301/mernspace-c-auth-service.git"
+  },
+  "license": "ISC",
+  "author": "Lakshya Mittal <lakshyamittalaka@gmail.com>",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
