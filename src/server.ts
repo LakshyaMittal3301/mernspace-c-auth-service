@@ -3,3 +3,4 @@ function welcome(name: string): string {
 }
 
 welcome("Lakshya Mittal");
+console.log("Hello");
