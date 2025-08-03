@@ -12,7 +12,7 @@
     },
     "license": "ISC",
     "author": "Lakshya Mittal <lakshyamittalaka@gmail.com>",
-    "type": "commonjs",
+    "type": "module",
     "main": "index.js",
     "scripts": {
         "start": "node src/index.js",
@@ -38,5 +38,8 @@
             "npm run format:fix",
             "npm run lint:fix"
         ]
+    },
+    "dependencies": {
+        "dotenv": "^17.2.1"
     }
 }
