@@ -26,6 +26,7 @@
     "devDependencies": {
         "@types/express": "^5.0.3",
         "@types/node": "^24.1.0",
+        "@types/winston": "^2.4.4",
         "@typescript-eslint/eslint-plugin": "^8.38.0",
         "@typescript-eslint/parser": "^8.38.0",
         "eslint": "^8.57.1",
@@ -45,6 +46,7 @@
     },
     "dependencies": {
         "dotenv": "^17.2.1",
-        "express": "^5.1.0"
+        "express": "^5.1.0",
+        "winston": "^3.17.0"
     }
 }
