@@ -81,6 +81,31 @@ describe("POST /auth/register", () => {
             expect(users[0]).toHaveProperty("role");
             expect(users[0].role).toBe(Roles.CUSTOMER);
         });
+
+        it("should store the hashed password in the database", async () => {
+            await request(app).post(registerRoute).send(userData);
+
+            const userRepository = connection.getRepository(User);
+            const users = await userRepository.find();
+
+            expect(users[0].password).not.toBe(userData.password);
+            expect(users[0].password).toHaveLength(60);
+            expect(users[0].password).toMatch(/^\$2b\$\d+\$/);
+        });
+
+        it("should return 400 status code if email already exists", async () => {
+            const userRepository = connection.getRepository(User);
+            await userRepository.save({ ...userData, role: Roles.CUSTOMER });
+
+            const response = await request(app)
+                .post(registerRoute)
+                .send(userData);
+
+            expect(response.statusCode).toBe(400);
+
+            const numberOfUsers = await userRepository.count();
+            expect(numberOfUsers).toBe(1);
+        });
     });
     describe("happy path", () => {});
 });

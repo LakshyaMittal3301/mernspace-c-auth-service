@@ -3,6 +3,7 @@ import { RegisterUserRequest } from "../types/index";
 import UserService from "../services/UserService";
 import createHttpError from "http-errors";
 import { Logger } from "winston";
+import { UserAlreadyExistsError } from "../errors/UserAlreadyExistsError";
 
 export class AuthController {
     constructor(
@@ -27,6 +28,9 @@ export class AuthController {
 
             res.status(201).json({ id: newUser.id });
         } catch (err) {
+            if (err instanceof UserAlreadyExistsError) {
+                throw createHttpError(400, err);
+            }
             throw createHttpError(500, "Registration Failed", { cause: err });
         }
     }
