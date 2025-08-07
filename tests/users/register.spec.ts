@@ -119,6 +119,61 @@ describe("POST /auth/register", () => {
             const response = await request(app)
                 .post(registerRoute)
                 .send(userData);
+
+            expect(response.statusCode).toBe(400);
+
+            const userRepository = connection.getRepository(User);
+            const numberOfUsers = await userRepository.count();
+            expect(numberOfUsers).toBe(0);
+        });
+
+        it("should return 400 status code if firstName field is missing", async () => {
+            const userData = {
+                email: "abc@gmail.com",
+                lastName: "Mittal",
+                password: "secret",
+            };
+
+            const response = await request(app)
+                .post(registerRoute)
+                .send(userData);
+
+            expect(response.statusCode).toBe(400);
+
+            const userRepository = connection.getRepository(User);
+            const numberOfUsers = await userRepository.count();
+            expect(numberOfUsers).toBe(0);
+        });
+
+        it("should return 400 status code if lastName field is missing", async () => {
+            const userData = {
+                email: "abc@gmail.com",
+                firstName: "Lakshya",
+                password: "secret",
+            };
+
+            const response = await request(app)
+                .post(registerRoute)
+                .send(userData);
+
+            expect(response.statusCode).toBe(400);
+
+            const userRepository = connection.getRepository(User);
+            const numberOfUsers = await userRepository.count();
+            expect(numberOfUsers).toBe(0);
+        });
+
+        it("should return 400 status code if password field is missing", async () => {
+            const userData = {
+                email: "abc@gmail.com",
+                firstName: "Lakshya",
+                lastName: "Mittal",
+            };
+
+            const response = await request(app)
+                .post(registerRoute)
+                .send(userData);
+
             expect(response.statusCode).toBe(400);
 
             const userRepository = connection.getRepository(User);
