@@ -2,10 +2,12 @@ import request from "supertest";
 import app from "../../src/app";
 import { DataSource } from "typeorm";
 import { AppDataSource } from "../../src/config/data-source";
-import { truncateTables } from "../utils";
 import { User } from "../../src/entity/User";
+import { Roles } from "../../src/constants";
 
 describe("POST /auth/register", () => {
+    const registerRoute = "/auth/register";
+
     let connection: DataSource;
 
     beforeAll(async () => {
@@ -13,23 +15,22 @@ describe("POST /auth/register", () => {
     });
 
     beforeEach(async () => {
-        await truncateTables(connection);
+        await connection.dropDatabase();
+        await connection.synchronize();
     });
 
     afterAll(async () => {
         await connection.destroy();
     });
 
-    const registerRoute = "/auth/register";
-
-    const userData = {
-        firstName: "Lakshya",
-        lastName: "Mittal",
-        email: "lakshyamittalaka@gmail.com",
-        password: "secret",
-    };
-
     describe("All fields are present", () => {
+        const userData = {
+            firstName: "Lakshya",
+            lastName: "Mittal",
+            email: "lakshyamittalaka@gmail.com",
+            password: "secret",
+        };
+
         it("should return status code 201", async () => {
             const response = await request(app)
                 .post(registerRoute)
@@ -69,6 +70,16 @@ describe("POST /auth/register", () => {
             const repository = AppDataSource.getRepository(User);
             const users = await repository.find();
             expect(response.body.id).toBe(users[0].id);
+        });
+
+        it("should assign a customer role", async () => {
+            await request(app).post(registerRoute).send(userData);
+
+            const userRepository = connection.getRepository(User);
+            const users = await userRepository.find();
+
+            expect(users[0]).toHaveProperty("role");
+            expect(users[0].role).toBe(Roles.CUSTOMER);
         });
     });
     describe("happy path", () => {});
