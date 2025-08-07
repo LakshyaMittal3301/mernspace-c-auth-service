@@ -5,6 +5,7 @@ import logger from "./config/logger";
 import authRouter from "./routes/auth";
 
 const app = express();
+app.use(express.json());
 
 app.get("/ping", async (req, res) => {
     res.send("PONG (AUTH Service)");
