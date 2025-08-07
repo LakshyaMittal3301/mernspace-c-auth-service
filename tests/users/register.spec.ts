@@ -59,6 +59,17 @@ describe("POST /auth/register", () => {
             expect(users[0].lastName).toBe(userData.lastName);
             expect(users[0].email).toBe(userData.email);
         });
+
+        it("should return the id of the created user", async () => {
+            const response = await request(app)
+                .post(registerRoute)
+                .send(userData);
+
+            expect(response.body).toHaveProperty("id");
+            const repository = AppDataSource.getRepository(User);
+            const users = await repository.find();
+            expect(response.body.id).toBe(users[0].id);
+        });
     });
     describe("happy path", () => {});
 });
