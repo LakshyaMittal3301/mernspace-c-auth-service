@@ -3,7 +3,6 @@ import { User } from "../entity/User";
 import { Repository } from "typeorm";
 import { Roles } from "../constants";
 import bcrypt from "bcrypt";
-import createHttpError from "http-errors";
 import { UserAlreadyExistsError } from "../errors/UserAlreadyExistsError";
 
 export default class UserService {

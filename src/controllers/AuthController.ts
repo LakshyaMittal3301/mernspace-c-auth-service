@@ -4,6 +4,7 @@ import UserService from "../services/UserService";
 import createHttpError from "http-errors";
 import { Logger } from "winston";
 import { UserAlreadyExistsError } from "../errors/UserAlreadyExistsError";
+import { validationResult } from "express-validator";
 
 export class AuthController {
     constructor(
@@ -12,6 +13,11 @@ export class AuthController {
     ) {}
 
     async register(req: RegisterUserRequest, res: Response) {
+        const result = validationResult(req);
+        if (!result.isEmpty()) {
+            return res.status(400).json({ errors: result.array() });
+        }
+
         const { firstName, lastName, email, password } = req.body;
 
         try {
@@ -31,7 +37,10 @@ export class AuthController {
             if (err instanceof UserAlreadyExistsError) {
                 throw createHttpError(400, err);
             }
-            throw createHttpError(500, "Registration Failed", { cause: err });
+
+            // Internal Error
+            this.logger.error("User Registration Failed", { error: err });
+            throw createHttpError(500, "Registration Failed");
         }
     }
 }

@@ -107,5 +107,23 @@ describe("POST /auth/register", () => {
             expect(numberOfUsers).toBe(1);
         });
     });
-    describe("happy path", () => {});
+
+    describe("Fields are missing", () => {
+        it("should return 400 status code if email field is missing", async () => {
+            const userData = {
+                firstName: "Lakshya",
+                lastName: "Mittal",
+                password: "secret",
+            };
+
+            const response = await request(app)
+                .post(registerRoute)
+                .send(userData);
+            expect(response.statusCode).toBe(400);
+
+            const userRepository = connection.getRepository(User);
+            const numberOfUsers = await userRepository.count();
+            expect(numberOfUsers).toBe(0);
+        });
+    });
 });
