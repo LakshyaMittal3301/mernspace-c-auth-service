@@ -144,14 +144,10 @@ describe("POST /auth/register", () => {
             expect(response.body).toHaveProperty("id");
 
             const refreshTokenRepo = connection.getRepository(RefreshToken);
-            // const refreshTokens = await refreshTokenRepo.find();
-            // expect(refreshTokens).toHaveLength(1);
 
             const query = refreshTokenRepo
                 .createQueryBuilder("refreshToken")
                 .where(`refreshToken.userId = ${response.body.id}`);
-
-            // console.log(query.getSql());
 
             const tokens = await query.getMany();
             expect(tokens).toHaveLength(1);

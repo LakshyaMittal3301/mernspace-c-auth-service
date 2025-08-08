@@ -1,5 +1,3 @@
-import fs from "fs";
-import path from "path";
 import { Response } from "express";
 import { RegisterUserRequest } from "../types/index";
 import UserService from "../services/UserService";
@@ -8,25 +6,24 @@ import { Logger } from "winston";
 import { UserAlreadyExistsError } from "../errors/UserAlreadyExistsError";
 import { validationResult } from "express-validator";
 import { JwtPayload, sign } from "jsonwebtoken";
-import { Config } from "../config";
-import { AppDataSource } from "../config/data-source";
-import { RefreshToken } from "../entity/RefreshToken";
+import TokenService from "../services/TokenService";
 
 export class AuthController {
     constructor(
         private userService: UserService,
         private logger: Logger,
+        private tokenService: TokenService,
     ) {}
 
     async register(req: RegisterUserRequest, res: Response) {
-        const result = validationResult(req);
-        if (!result.isEmpty()) {
-            return res.status(400).json({ errors: result.array() });
-        }
-
-        const { firstName, lastName, email, password } = req.body;
-
         try {
+            const result = validationResult(req);
+            if (!result.isEmpty()) {
+                return res.status(400).json({ errors: result.array() });
+            }
+
+            const { firstName, lastName, email, password } = req.body;
+
             const newUser = await this.userService.create({
                 firstName,
                 lastName,
@@ -34,29 +31,8 @@ export class AuthController {
                 password,
             });
 
-            this.logger.info("User registered successfully", {
+            this.logger.info("User created successfully", {
                 id: newUser.id,
-            });
-
-            let privateKey: Buffer;
-            try {
-                privateKey = fs.readFileSync(
-                    path.join(__dirname, "../../certs/private.pem"),
-                );
-            } catch (err) {
-                this.logger.error("Error in reading private key", {
-                    error: err,
-                });
-                throw createHttpError(500, "Error in reading private key");
-            }
-
-            // Persist Refresh Token
-            const MS_IN_YEAR = 1000 * 60 * 60 * 24 * 365;
-            const refreshTokenRepository =
-                AppDataSource.getRepository(RefreshToken);
-            const newRefreshTokenRecord = await refreshTokenRepository.save({
-                user: newUser,
-                expiresAt: new Date(Date.now() + MS_IN_YEAR),
             });
 
             const payload: JwtPayload = {
@@ -64,18 +40,12 @@ export class AuthController {
                 role: newUser.role,
             };
 
-            const accessToken = sign(payload, privateKey, {
-                algorithm: "RS256",
-                expiresIn: "1h",
-                issuer: "auth-service",
-            });
+            const accessToken = this.tokenService.generateAccessToken(payload);
 
-            const refreshToken = sign(payload, Config.REFRESH_TOKEN_SECRET!, {
-                algorithm: "HS256",
-                expiresIn: "1y",
-                issuer: "auth-service",
-                jwtid: String(newRefreshTokenRecord.id),
-            });
+            const refreshToken = await this.tokenService.generateRefreshToken(
+                payload,
+                newUser,
+            );
 
             res.cookie("accessToken", accessToken, {
                 domain: "localhost",
