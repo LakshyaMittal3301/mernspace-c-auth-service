@@ -28,7 +28,7 @@ describe("POST /auth/register", () => {
             firstName: "Lakshya",
             lastName: "Mittal",
             email: "lakshyamittalaka@gmail.com",
-            password: "secret",
+            password: "strongPassword@123",
         };
 
         it("should return status code 201", async () => {
@@ -113,7 +113,7 @@ describe("POST /auth/register", () => {
             const userData = {
                 firstName: "Lakshya",
                 lastName: "Mittal",
-                password: "secret",
+                password: "strongPassword@123",
             };
 
             const response = await request(app)
@@ -131,7 +131,7 @@ describe("POST /auth/register", () => {
             const userData = {
                 email: "abc@gmail.com",
                 lastName: "Mittal",
-                password: "secret",
+                password: "strongPassword@123",
             };
 
             const response = await request(app)
@@ -149,7 +149,7 @@ describe("POST /auth/register", () => {
             const userData = {
                 email: "abc@gmail.com",
                 firstName: "Lakshya",
-                password: "secret",
+                password: "strongPassword@123",
             };
 
             const response = await request(app)
@@ -168,6 +168,67 @@ describe("POST /auth/register", () => {
                 email: "abc@gmail.com",
                 firstName: "Lakshya",
                 lastName: "Mittal",
+            };
+
+            const response = await request(app)
+                .post(registerRoute)
+                .send(userData);
+
+            expect(response.statusCode).toBe(400);
+
+            const userRepository = connection.getRepository(User);
+            const numberOfUsers = await userRepository.count();
+            expect(numberOfUsers).toBe(0);
+        });
+    });
+
+    describe("Fields are not in proper format", () => {
+        it("should trim the email field", async () => {
+            const properEmail = "abc@gmail.com";
+            const userData = {
+                email: "    " + properEmail + "  ",
+                firstName: "abc",
+                lastName: "abc",
+                password: "strongPassword@123",
+            };
+
+            const response = await request(app)
+                .post(registerRoute)
+                .send(userData);
+
+            expect(response.statusCode).toBe(201);
+
+            const userRepository = connection.getRepository(User);
+            const users = await userRepository.find();
+
+            expect(users[0].email).toBe(properEmail);
+        });
+
+        it("should return 400 status code if email is not a valid email", async () => {
+            const userData = {
+                email: "abcgmail.com",
+                firstName: "Lakshya",
+                lastName: "Mittal",
+                password: "strongPassword@123",
+            };
+
+            const response = await request(app)
+                .post(registerRoute)
+                .send(userData);
+
+            expect(response.statusCode).toBe(400);
+
+            const userRepository = connection.getRepository(User);
+            const numberOfUsers = await userRepository.count();
+            expect(numberOfUsers).toBe(0);
+        });
+
+        it("should return 400 status code if password length is less than 8", async () => {
+            const userData = {
+                email: "abc@gmail.com",
+                firstName: "Lakshya",
+                lastName: "Mittal",
+                password: "secret",
             };
 
             const response = await request(app)
