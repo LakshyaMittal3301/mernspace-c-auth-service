@@ -5,6 +5,7 @@ import { AppDataSource } from "../../src/config/data-source";
 import { User } from "../../src/entity/User";
 import { Roles } from "../../src/constants";
 import { isJWT } from "../utils";
+import { RefreshToken } from "../../src/entity/RefreshToken";
 
 describe("POST /auth/register", () => {
     const registerRoute = "/auth/register";
@@ -133,6 +134,27 @@ describe("POST /auth/register", () => {
 
             expect(isJWT(accessToken)).toBeTruthy();
             expect(isJWT(refreshToken)).toBeTruthy();
+        });
+
+        it("should store a refresh token for the user", async () => {
+            const response = await request(app)
+                .post(registerRoute)
+                .send(userData);
+
+            expect(response.body).toHaveProperty("id");
+
+            const refreshTokenRepo = connection.getRepository(RefreshToken);
+            // const refreshTokens = await refreshTokenRepo.find();
+            // expect(refreshTokens).toHaveLength(1);
+
+            const query = refreshTokenRepo
+                .createQueryBuilder("refreshToken")
+                .where(`refreshToken.userId = ${response.body.id}`);
+
+            // console.log(query.getSql());
+
+            const tokens = await query.getMany();
+            expect(tokens).toHaveLength(1);
         });
     });
 
