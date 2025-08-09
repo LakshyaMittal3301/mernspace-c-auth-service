@@ -25,7 +25,7 @@ export default class UserService implements IUserService {
         });
     }
 
-    async findByEmail(email: string): Promise<User | null> {
-        return await this.userRepository.findOne({ where: { email } });
+    findByEmail(email: string): Promise<User | null> {
+        return this.userRepository.findOne({ where: { email } });
     }
 }

@@ -2,8 +2,12 @@ import { IPasswordService } from "../interfaces/services/IPasswordService";
 import bcrypt from "bcrypt";
 
 export default class PasswordService implements IPasswordService {
-    async hashPassword(password: string): Promise<string> {
+    hashPassword(password: string): Promise<string> {
         const saltRounds = 10;
-        return await bcrypt.hash(password, saltRounds);
+        return bcrypt.hash(password, saltRounds);
+    }
+
+    comparePassword(plain: string, digest: string): Promise<Boolean> {
+        return bcrypt.compare(plain, digest);
     }
 }

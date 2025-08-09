@@ -1,14 +1,12 @@
 import { JwtPayload } from "jsonwebtoken";
 
-export type AccessTokenPayload = JwtPayload & {
+export type TokenPayload = JwtPayload & {
     sub: string;
     email?: string;
     role?: string;
 };
 
-export type RefreshTokenPayload = AccessTokenPayload;
-
 export interface ITokenService {
-    generateAccessToken(payload: AccessTokenPayload): string;
-    generateRefreshToken(payload: RefreshTokenPayload, userId: number): Promise<string>;
+    generateAccessToken(payload: TokenPayload): string;
+    generateRefreshToken(payload: TokenPayload, userId: number): Promise<string>;
 }

@@ -17,6 +17,12 @@ export type AuthResult = {
     tokens: TokenPair;
 };
 
+export type LoginDto = {
+    email: string;
+    password: string;
+};
+
 export interface IAuthService {
     register(registerDto: RegisterDto): Promise<AuthResult>;
+    login(loginDto: LoginDto): Promise<AuthResult>;
 }

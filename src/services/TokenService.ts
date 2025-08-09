@@ -4,8 +4,7 @@ import path from "path";
 import { Repository } from "typeorm";
 import { RefreshToken } from "../entity/RefreshToken";
 import { Config } from "../config";
-import { ITokenService, RefreshTokenPayload } from "../interfaces/services/ITokenService";
-import { User } from "../entity/User";
+import { ITokenService, TokenPayload } from "../interfaces/services/ITokenService";
 
 export default class TokenService implements ITokenService {
     private privateKey: Buffer;
@@ -22,7 +21,7 @@ export default class TokenService implements ITokenService {
         });
     }
 
-    async generateRefreshToken(payload: RefreshTokenPayload, userId: number): Promise<string> {
+    async generateRefreshToken(payload: TokenPayload, userId: number): Promise<string> {
         const MS_IN_YEAR = 1000 * 60 * 60 * 24 * 365;
 
         const newRefreshTokenRecord = await this.refreshTokenRepository.save({

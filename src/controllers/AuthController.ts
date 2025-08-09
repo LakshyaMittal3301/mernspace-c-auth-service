@@ -3,7 +3,8 @@ import createHttpError from "http-errors";
 import { Logger } from "winston";
 import { UserAlreadyExistsError } from "../errors/UserAlreadyExistsError";
 import { validationResult } from "express-validator";
-import { IAuthService, RegisterDto } from "../interfaces/services/IAuthService";
+import { IAuthService, LoginDto, RegisterDto } from "../interfaces/services/IAuthService";
+import { InvalidCredentialsError } from "../errors/InvalidCredentialsError";
 
 export class AuthController {
     constructor(
@@ -43,6 +44,41 @@ export class AuthController {
             // Internal Error
             this.logger.error("User Registration Failed", { error: err });
             throw createHttpError(500, "Registration Failed");
+        }
+    }
+
+    async login(req: Request<{}, {}, LoginDto>, res: Response) {
+        try {
+            const result = validationResult(req);
+            if (!result.isEmpty()) {
+                return res.status(400).json({ errors: result.array() });
+            }
+
+            const { user, tokens } = await this.authService.login(req.body);
+
+            res.cookie("accessToken", tokens.accessToken, {
+                domain: "localhost",
+                sameSite: "strict",
+                maxAge: 1000 * 60 * 60,
+                httpOnly: true,
+            });
+
+            res.cookie("refreshToken", tokens.refreshToken, {
+                domain: "localhost",
+                sameSite: "strict",
+                maxAge: 1000 * 60 * 60 * 24 * 365,
+                httpOnly: true,
+            });
+
+            res.status(200).json({ id: user.id });
+        } catch (err) {
+            if (err instanceof InvalidCredentialsError) {
+                throw createHttpError(401, err.message);
+            }
+
+            // Login Failed
+            this.logger.error("User Login Failed", { error: err });
+            throw createHttpError(500, "Login Failed");
         }
     }
 }

@@ -18,7 +18,7 @@
         "start": "ts-node src/index.ts",
         "format:check": "prettier . --check",
         "format:fix": "prettier . --write",
-        "test": "jest",
+        "test": "jest --no-cache --coverage --all --runInBand",
         "prepare": "husky",
         "typeorm": "typeorm-ts-node-commonjs"
     },
