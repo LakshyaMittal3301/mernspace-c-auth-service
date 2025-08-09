@@ -2,10 +2,10 @@ import { UserData } from "../types";
 import { User } from "../entity/User";
 import { Repository } from "typeorm";
 import { Roles } from "../constants";
-import bcrypt from "bcrypt";
 import { UserAlreadyExistsError } from "../errors/UserAlreadyExistsError";
+import IUserService from "../interfaces/services/IUserService";
 
-export default class UserService {
+export default class UserService implements IUserService {
     constructor(private userRepository: Repository<User>) {}
 
     async create({
@@ -14,9 +14,6 @@ export default class UserService {
         email,
         password,
     }: UserData): Promise<User> {
-        const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
-
         const user = await this.userRepository.findOne({
             where: { email: email },
         });
@@ -29,8 +26,12 @@ export default class UserService {
             firstName,
             lastName,
             email,
-            password: hashedPassword,
+            password: password,
             role: Roles.CUSTOMER,
         });
+    }
+
+    async findByEmail(email: string): Promise<User | null> {
+        return await this.userRepository.findOne({ where: { email } });
     }
 }

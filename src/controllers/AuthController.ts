@@ -1,18 +1,15 @@
 import { Response } from "express";
 import { RegisterUserRequest } from "../types/index";
-import UserService from "../services/UserService";
 import createHttpError from "http-errors";
 import { Logger } from "winston";
 import { UserAlreadyExistsError } from "../errors/UserAlreadyExistsError";
 import { validationResult } from "express-validator";
-import { JwtPayload, sign } from "jsonwebtoken";
-import TokenService from "../services/TokenService";
+import IAuthService from "../interfaces/services/IAuthService";
 
 export class AuthController {
     constructor(
-        private userService: UserService,
         private logger: Logger,
-        private tokenService: TokenService,
+        private authService: IAuthService,
     ) {}
 
     async register(req: RegisterUserRequest, res: Response) {
@@ -24,28 +21,15 @@ export class AuthController {
 
             const { firstName, lastName, email, password } = req.body;
 
-            const newUser = await this.userService.create({
+            const {
+                user,
+                tokens: { accessToken, refreshToken },
+            } = await this.authService.register({
                 firstName,
                 lastName,
                 email,
                 password,
             });
-
-            this.logger.info("User created successfully", {
-                id: newUser.id,
-            });
-
-            const payload: JwtPayload = {
-                sub: String(newUser.id),
-                role: newUser.role,
-            };
-
-            const accessToken = this.tokenService.generateAccessToken(payload);
-
-            const refreshToken = await this.tokenService.generateRefreshToken(
-                payload,
-                newUser,
-            );
 
             res.cookie("accessToken", accessToken, {
                 domain: "localhost",
@@ -61,7 +45,7 @@ export class AuthController {
                 httpOnly: true,
             });
 
-            res.status(201).json({ id: newUser.id });
+            res.status(201).json({ id: user.id });
         } catch (err) {
             if (err instanceof UserAlreadyExistsError) {
                 throw createHttpError(400, err);

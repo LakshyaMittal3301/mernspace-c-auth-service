@@ -5,10 +5,13 @@ import { Repository } from "typeorm";
 import { RefreshToken } from "../entity/RefreshToken";
 import { User } from "../entity/User";
 import { Config } from "../config";
-export default class TokenService {
+import ITokenService from "../interfaces/services/ITokenService";
+
+export default class TokenService implements ITokenService {
     constructor(private refreshTokenRepository: Repository<RefreshToken>) {}
 
-    generateAccessToken(payload: JwtPayload): string {
+    async generateAccessToken(payload: JwtPayload): Promise<string> {
+        // To-do: Load private key on start-up
         const privateKey = fs.readFileSync(
             path.join(__dirname, "../../certs/private.pem"),
         );

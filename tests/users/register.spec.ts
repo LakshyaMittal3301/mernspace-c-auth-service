@@ -33,7 +33,7 @@ describe("POST /auth/register", () => {
             password: "strongPassword@123",
         };
 
-        it("should return status code 201", async () => {
+        it("should return status code 201 when registration is successful", async () => {
             const response = await request(app)
                 .post(registerRoute)
                 .send(userData);
@@ -41,7 +41,7 @@ describe("POST /auth/register", () => {
             expect(response.statusCode).toBe(201);
         });
 
-        it("should return status code 201", async () => {
+        it("should return headers with content-type json", async () => {
             const response = await request(app)
                 .post(registerRoute)
                 .send(userData);
