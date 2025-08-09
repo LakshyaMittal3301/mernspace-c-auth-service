@@ -40,8 +40,7 @@ export default class AuthService implements IAuthService {
             role: user.role,
         };
 
-        const accessToken =
-            await this.tokenService.generateAccessToken(payload);
+        const accessToken = this.tokenService.generateAccessToken(payload);
 
         const refreshToken = await this.tokenService.generateRefreshToken(
             payload,
