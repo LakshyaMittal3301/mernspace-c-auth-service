@@ -1,19 +1,13 @@
-import { UserData } from "../types";
 import { User } from "../entity/User";
 import { Repository } from "typeorm";
 import { Roles } from "../constants";
 import { UserAlreadyExistsError } from "../errors/UserAlreadyExistsError";
-import IUserService from "../interfaces/services/IUserService";
+import { CreateUserWithHashDto, IUserService } from "../interfaces/services/IUserService";
 
 export default class UserService implements IUserService {
     constructor(private userRepository: Repository<User>) {}
 
-    async create({
-        firstName,
-        lastName,
-        email,
-        password,
-    }: UserData): Promise<User> {
+    async createWithHash({ firstName, lastName, email, hashedPassword }: CreateUserWithHashDto): Promise<User> {
         const user = await this.userRepository.findOne({
             where: { email: email },
         });
@@ -26,7 +20,7 @@ export default class UserService implements IUserService {
             firstName,
             lastName,
             email,
-            password: password,
+            password: hashedPassword,
             role: Roles.CUSTOMER,
         });
     }

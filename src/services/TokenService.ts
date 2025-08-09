@@ -3,17 +3,15 @@ import fs from "fs";
 import path from "path";
 import { Repository } from "typeorm";
 import { RefreshToken } from "../entity/RefreshToken";
-import { User } from "../entity/User";
 import { Config } from "../config";
-import ITokenService from "../interfaces/services/ITokenService";
+import { ITokenService, RefreshTokenPayload } from "../interfaces/services/ITokenService";
+import { User } from "../entity/User";
 
 export default class TokenService implements ITokenService {
     private privateKey: Buffer;
 
     constructor(private refreshTokenRepository: Repository<RefreshToken>) {
-        this.privateKey = fs.readFileSync(
-            path.join(__dirname, "../../certs/private.pem"),
-        );
+        this.privateKey = fs.readFileSync(path.join(__dirname, "../../certs/private.pem"));
     }
 
     generateAccessToken(payload: JwtPayload): string {
@@ -24,14 +22,11 @@ export default class TokenService implements ITokenService {
         });
     }
 
-    async generateRefreshToken(
-        payload: JwtPayload,
-        user: User,
-    ): Promise<string> {
+    async generateRefreshToken(payload: RefreshTokenPayload, userId: number): Promise<string> {
         const MS_IN_YEAR = 1000 * 60 * 60 * 24 * 365;
 
         const newRefreshTokenRecord = await this.refreshTokenRepository.save({
-            user: user,
+            user: { id: userId },
             expiresAt: new Date(Date.now() + MS_IN_YEAR),
         });
 

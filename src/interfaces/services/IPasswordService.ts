@@ -1,3 +1,3 @@
-export default interface IPasswordService {
+export interface IPasswordService {
     hashPassword(password: string): Promise<string>;
 }

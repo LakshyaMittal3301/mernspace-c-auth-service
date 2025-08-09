@@ -1,11 +1,4 @@
-import {
-    Column,
-    CreateDateColumn,
-    Entity,
-    ManyToOne,
-    PrimaryGeneratedColumn,
-    UpdateDateColumn,
-} from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { User } from "./User";
 
 @Entity()
@@ -14,10 +7,10 @@ export class RefreshToken {
     id: number;
 
     @UpdateDateColumn()
-    updatedAt: number;
+    updatedAt: Date;
 
     @CreateDateColumn()
-    createdAt: number;
+    createdAt: Date;
 
     @Column({ type: "timestamp" })
     expiresAt: Date;

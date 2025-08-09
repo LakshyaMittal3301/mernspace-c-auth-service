@@ -21,17 +21,14 @@ const tokenService = new TokenService(tokenRepository);
 
 const passwordService = new PasswordService();
 
-const authService = new AuthService(
-    logger,
-    userService,
-    passwordService,
-    tokenService,
-);
+const authService = new AuthService(logger, userService, passwordService, tokenService);
 
 const authController = new AuthController(logger, authService);
 
-router.post("/register", registerValidator, (req: Request, res: Response) =>
-    authController.register(req, res),
-);
+router.post("/register", registerValidator, (req: Request, res: Response) => authController.register(req, res));
+
+// router.post("/login", loginValidator, (req: Request, res: Response) =>
+//     authController.login(req, res),
+// );
 
 export default router;

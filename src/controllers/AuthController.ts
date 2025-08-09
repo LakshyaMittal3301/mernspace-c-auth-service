@@ -1,10 +1,9 @@
-import { Response } from "express";
-import { RegisterUserRequest } from "../types/index";
+import { Request, Response } from "express";
 import createHttpError from "http-errors";
 import { Logger } from "winston";
 import { UserAlreadyExistsError } from "../errors/UserAlreadyExistsError";
 import { validationResult } from "express-validator";
-import IAuthService from "../interfaces/services/IAuthService";
+import { IAuthService, RegisterDto } from "../interfaces/services/IAuthService";
 
 export class AuthController {
     constructor(
@@ -12,33 +11,23 @@ export class AuthController {
         private authService: IAuthService,
     ) {}
 
-    async register(req: RegisterUserRequest, res: Response) {
+    async register(req: Request<{}, {}, RegisterDto>, res: Response) {
         try {
             const result = validationResult(req);
             if (!result.isEmpty()) {
                 return res.status(400).json({ errors: result.array() });
             }
 
-            const { firstName, lastName, email, password } = req.body;
+            const { user, tokens } = await this.authService.register(req.body);
 
-            const {
-                user,
-                tokens: { accessToken, refreshToken },
-            } = await this.authService.register({
-                firstName,
-                lastName,
-                email,
-                password,
-            });
-
-            res.cookie("accessToken", accessToken, {
+            res.cookie("accessToken", tokens.accessToken, {
                 domain: "localhost",
                 sameSite: "strict",
                 maxAge: 1000 * 60 * 60,
                 httpOnly: true,
             });
 
-            res.cookie("refreshToken", refreshToken, {
+            res.cookie("refreshToken", tokens.refreshToken, {
                 domain: "localhost",
                 sameSite: "strict",
                 maxAge: 1000 * 60 * 60 * 24 * 365,

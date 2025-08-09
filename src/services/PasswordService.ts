@@ -1,4 +1,4 @@
-import IPasswordService from "../interfaces/services/IPasswordService";
+import { IPasswordService } from "../interfaces/services/IPasswordService";
 import bcrypt from "bcrypt";
 
 export default class PasswordService implements IPasswordService {

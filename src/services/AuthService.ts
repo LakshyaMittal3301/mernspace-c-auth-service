@@ -1,11 +1,8 @@
 import { Logger } from "winston";
-import { User } from "../entity/User";
-import IAuthService from "../interfaces/services/IAuthService";
-import IPasswordService from "../interfaces/services/IPasswordService";
-import ITokenService from "../interfaces/services/ITokenService";
-import IUserService from "../interfaces/services/IUserService";
-import { UserData } from "../types";
-import { JwtPayload } from "jsonwebtoken";
+import { AuthResult, IAuthService, RegisterDto } from "../interfaces/services/IAuthService";
+import { IPasswordService } from "../interfaces/services/IPasswordService";
+import { AccessTokenPayload, ITokenService } from "../interfaces/services/ITokenService";
+import { IUserService } from "../interfaces/services/IUserService";
 
 export default class AuthService implements IAuthService {
     constructor(
@@ -15,37 +12,29 @@ export default class AuthService implements IAuthService {
         private tokenService: ITokenService,
     ) {}
 
-    async register(registerData: UserData): Promise<{
-        user: User;
-        tokens: { accessToken: string; refreshToken: string };
-    }> {
-        const { firstName, lastName, email, password } = registerData;
+    async register(registerDto: RegisterDto): Promise<AuthResult> {
+        const { firstName, lastName, email, password } = registerDto;
 
         // Hashing Password
-        const hashedPassword =
-            await this.passwordService.hashPassword(password);
+        const hashedPassword = await this.passwordService.hashPassword(password);
 
         // Saving user
-        const user = await this.userService.create({
+        const user = await this.userService.createWithHash({
             firstName,
             lastName,
             email,
-            password: hashedPassword,
+            hashedPassword,
         });
         this.logger.info(`User created successfully`, { id: user.id });
 
         // Get Access Token and Refresh Token
-        const payload: JwtPayload = {
+        const payload: AccessTokenPayload = {
             sub: String(user.id),
             role: user.role,
         };
 
         const accessToken = this.tokenService.generateAccessToken(payload);
-
-        const refreshToken = await this.tokenService.generateRefreshToken(
-            payload,
-            user,
-        );
+        const refreshToken = await this.tokenService.generateRefreshToken(payload, user.id);
 
         return {
             user,

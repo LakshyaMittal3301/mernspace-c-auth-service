@@ -34,21 +34,15 @@ describe("POST /auth/register", () => {
         };
 
         it("should return status code 201 when registration is successful", async () => {
-            const response = await request(app)
-                .post(registerRoute)
-                .send(userData);
+            const response = await request(app).post(registerRoute).send(userData);
 
             expect(response.statusCode).toBe(201);
         });
 
         it("should return headers with content-type json", async () => {
-            const response = await request(app)
-                .post(registerRoute)
-                .send(userData);
+            const response = await request(app).post(registerRoute).send(userData);
 
-            expect(response.headers["content-type"]).toEqual(
-                expect.stringContaining("json"),
-            );
+            expect(response.headers["content-type"]).toEqual(expect.stringContaining("json"));
         });
 
         it("should persist the user in the database", async () => {
@@ -64,9 +58,7 @@ describe("POST /auth/register", () => {
         });
 
         it("should return the id of the created user", async () => {
-            const response = await request(app)
-                .post(registerRoute)
-                .send(userData);
+            const response = await request(app).post(registerRoute).send(userData);
 
             expect(response.body).toHaveProperty("id");
             const repository = AppDataSource.getRepository(User);
@@ -99,9 +91,7 @@ describe("POST /auth/register", () => {
             const userRepository = connection.getRepository(User);
             await userRepository.save({ ...userData, role: Roles.CUSTOMER });
 
-            const response = await request(app)
-                .post(registerRoute)
-                .send(userData);
+            const response = await request(app).post(registerRoute).send(userData);
 
             expect(response.statusCode).toBe(400);
 
@@ -110,9 +100,7 @@ describe("POST /auth/register", () => {
         });
 
         it("should return access token and refresh token inside the cookies", async () => {
-            const response = await request(app)
-                .post(registerRoute)
-                .send(userData);
+            const response = await request(app).post(registerRoute).send(userData);
 
             let accessToken = "";
             let refreshToken = "";
@@ -137,9 +125,7 @@ describe("POST /auth/register", () => {
         });
 
         it("should store a refresh token for the user", async () => {
-            const response = await request(app)
-                .post(registerRoute)
-                .send(userData);
+            const response = await request(app).post(registerRoute).send(userData);
 
             expect(response.body).toHaveProperty("id");
 
@@ -162,9 +148,7 @@ describe("POST /auth/register", () => {
                 password: "strongPassword@123",
             };
 
-            const response = await request(app)
-                .post(registerRoute)
-                .send(userData);
+            const response = await request(app).post(registerRoute).send(userData);
 
             expect(response.statusCode).toBe(400);
 
@@ -180,9 +164,7 @@ describe("POST /auth/register", () => {
                 password: "strongPassword@123",
             };
 
-            const response = await request(app)
-                .post(registerRoute)
-                .send(userData);
+            const response = await request(app).post(registerRoute).send(userData);
 
             expect(response.statusCode).toBe(400);
 
@@ -198,9 +180,7 @@ describe("POST /auth/register", () => {
                 password: "strongPassword@123",
             };
 
-            const response = await request(app)
-                .post(registerRoute)
-                .send(userData);
+            const response = await request(app).post(registerRoute).send(userData);
 
             expect(response.statusCode).toBe(400);
 
@@ -216,9 +196,7 @@ describe("POST /auth/register", () => {
                 lastName: "Mittal",
             };
 
-            const response = await request(app)
-                .post(registerRoute)
-                .send(userData);
+            const response = await request(app).post(registerRoute).send(userData);
 
             expect(response.statusCode).toBe(400);
 
@@ -238,9 +216,7 @@ describe("POST /auth/register", () => {
                 password: "strongPassword@123",
             };
 
-            const response = await request(app)
-                .post(registerRoute)
-                .send(userData);
+            const response = await request(app).post(registerRoute).send(userData);
 
             expect(response.statusCode).toBe(201);
 
@@ -258,9 +234,7 @@ describe("POST /auth/register", () => {
                 password: "strongPassword@123",
             };
 
-            const response = await request(app)
-                .post(registerRoute)
-                .send(userData);
+            const response = await request(app).post(registerRoute).send(userData);
 
             expect(response.statusCode).toBe(400);
 
@@ -277,9 +251,7 @@ describe("POST /auth/register", () => {
                 password: "secret",
             };
 
-            const response = await request(app)
-                .post(registerRoute)
-                .send(userData);
+            const response = await request(app).post(registerRoute).send(userData);
 
             expect(response.statusCode).toBe(400);
 
