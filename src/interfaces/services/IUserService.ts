@@ -10,4 +10,5 @@ export type CreateUserWithHashDto = {
 export interface IUserService {
     createWithHash(data: CreateUserWithHashDto): Promise<User>;
     findByEmail(email: string): Promise<User | null>;
+    findById(id: number): Promise<User>;
 }

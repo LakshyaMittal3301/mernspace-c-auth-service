@@ -28,4 +28,17 @@ export default class UserService implements IUserService {
     findByEmail(email: string): Promise<User | null> {
         return this.userRepository.findOne({ where: { email } });
     }
+
+    async findById(id: number): Promise<User> {
+        const user = await this.userRepository.findOne({
+            where: {
+                id,
+            },
+        });
+
+        if (user === null) {
+            throw new Error("User with id does not exist");
+        }
+        return user;
+    }
 }

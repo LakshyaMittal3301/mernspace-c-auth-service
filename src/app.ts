@@ -3,9 +3,11 @@ import express, { Request, Response, NextFunction } from "express";
 import { HttpError } from "http-errors";
 import logger from "./config/logger";
 import authRouter from "./routes/auth";
+import cookieParser from "cookie-parser";
 
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
 
 app.get("/ping", async (req, res) => {
     res.send("PONG (AUTH Service)");

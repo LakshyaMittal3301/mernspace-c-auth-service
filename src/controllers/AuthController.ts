@@ -1,18 +1,24 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import createHttpError from "http-errors";
 import { Logger } from "winston";
 import { UserAlreadyExistsError } from "../errors/UserAlreadyExistsError";
 import { validationResult } from "express-validator";
-import { IAuthService, LoginDto, RegisterDto } from "../interfaces/services/IAuthService";
+import { IAuthService } from "../interfaces/services/IAuthService";
 import { InvalidCredentialsError } from "../errors/InvalidCredentialsError";
+import {
+    AuthenticatedRequest,
+    IAuthController,
+    LoginRequest,
+    RegisterRequest,
+} from "../interfaces/controllers/IAuthController";
 
-export class AuthController {
+export class AuthController implements IAuthController {
     constructor(
         private logger: Logger,
         private authService: IAuthService,
     ) {}
 
-    async register(req: Request<{}, {}, RegisterDto>, res: Response) {
+    async register(req: RegisterRequest, res: Response) {
         try {
             const result = validationResult(req);
             if (!result.isEmpty()) {
@@ -47,7 +53,7 @@ export class AuthController {
         }
     }
 
-    async login(req: Request<{}, {}, LoginDto>, res: Response) {
+    async login(req: LoginRequest, res: Response) {
         try {
             const result = validationResult(req);
             if (!result.isEmpty()) {
@@ -80,5 +86,12 @@ export class AuthController {
             this.logger.error("User Login Failed", { error: err });
             throw createHttpError(500, "Login Failed");
         }
+    }
+
+    async self(req: AuthenticatedRequest, res: Response) {
+        const userId = req.auth.sub;
+        const user = await this.authService.findUserById(Number(userId));
+        console.log("User: ", user);
+        res.json(user);
     }
 }

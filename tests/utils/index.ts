@@ -1,4 +1,7 @@
 import { DataSource } from "typeorm";
+import { User } from "../../src/entity/User";
+import { Roles } from "../../src/constants";
+import bcrypt from "bcrypt";
 
 export const truncateTables = async (connection: DataSource) => {
     const entities = connection.entityMetadatas;
@@ -23,4 +26,61 @@ export const isJWT = (token: string): boolean => {
     }
 
     return true;
+};
+
+export const createUser = async (
+    connection: DataSource,
+    {
+        firstName,
+        lastName,
+        email,
+        password,
+        role = Roles.CUSTOMER,
+    }: {
+        firstName: string;
+        lastName: string;
+        email: string;
+        password: string;
+        role?: string;
+    },
+): Promise<User> => {
+    const userRepo = connection.getRepository(User);
+
+    return userRepo.save({
+        firstName,
+        lastName,
+        email,
+        password,
+        role,
+    });
+};
+
+export const createUserWithHashedPassword = async (
+    connection: DataSource,
+    {
+        firstName,
+        lastName,
+        email,
+        password,
+        role = Roles.CUSTOMER,
+    }: {
+        firstName: string;
+        lastName: string;
+        email: string;
+        password: string;
+        role?: string;
+    },
+): Promise<User> => {
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    const userRepo = connection.getRepository(User);
+
+    return userRepo.save({
+        firstName,
+        lastName,
+        email,
+        password: hashedPassword,
+        role,
+    });
 };

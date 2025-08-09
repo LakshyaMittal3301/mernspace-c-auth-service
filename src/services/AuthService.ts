@@ -4,6 +4,7 @@ import { IPasswordService } from "../interfaces/services/IPasswordService";
 import { TokenPayload, ITokenService } from "../interfaces/services/ITokenService";
 import { IUserService } from "../interfaces/services/IUserService";
 import { InvalidCredentialsError } from "../errors/InvalidCredentialsError";
+import { User } from "../entity/User";
 
 export default class AuthService implements IAuthService {
     constructor(
@@ -69,5 +70,9 @@ export default class AuthService implements IAuthService {
                 refreshToken,
             },
         };
+    }
+
+    findUserById(userId: number): Promise<User> {
+        return this.userService.findById(userId);
     }
 }

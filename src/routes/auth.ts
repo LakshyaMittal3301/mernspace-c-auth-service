@@ -11,6 +11,8 @@ import { RefreshToken } from "../entity/RefreshToken";
 import PasswordService from "../services/PasswordService";
 import AuthService from "../services/AuthService";
 import loginValidator from "../validators/login-validator";
+import authenticate from "../middlewares/authenticate";
+import { AuthenticatedRequest } from "../interfaces/controllers/IAuthController";
 
 const router = express.Router();
 
@@ -29,5 +31,9 @@ const authController = new AuthController(logger, authService);
 router.post("/register", registerValidator, (req: Request, res: Response) => authController.register(req, res));
 
 router.post("/login", loginValidator, (req: Request, res: Response) => authController.login(req, res));
+
+router.get("/self", authenticate, (req: Request, res: Response) =>
+    authController.self(req as AuthenticatedRequest, res),
+);
 
 export default router;

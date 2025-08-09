@@ -25,4 +25,5 @@ export type LoginDto = {
 export interface IAuthService {
     register(registerDto: RegisterDto): Promise<AuthResult>;
     login(loginDto: LoginDto): Promise<AuthResult>;
+    findUserById(userId: number): Promise<User>;
 }
