@@ -8,21 +8,20 @@ import { Config } from "../config";
 import ITokenService from "../interfaces/services/ITokenService";
 
 export default class TokenService implements ITokenService {
-    constructor(private refreshTokenRepository: Repository<RefreshToken>) {}
+    private privateKey: Buffer;
 
-    async generateAccessToken(payload: JwtPayload): Promise<string> {
-        // To-do: Load private key on start-up
-        const privateKey = fs.readFileSync(
+    constructor(private refreshTokenRepository: Repository<RefreshToken>) {
+        this.privateKey = fs.readFileSync(
             path.join(__dirname, "../../certs/private.pem"),
         );
+    }
 
-        const accessToken = sign(payload, privateKey, {
+    generateAccessToken(payload: JwtPayload): string {
+        return sign(payload, this.privateKey, {
             algorithm: "RS256",
             expiresIn: "1h",
             issuer: "auth-service",
         });
-
-        return accessToken;
     }
 
     async generateRefreshToken(
