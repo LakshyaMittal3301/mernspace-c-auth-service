@@ -5,12 +5,12 @@ export type RegisterRequest = Request<{}, {}, RegisterDto>;
 
 export type LoginRequest = Request<{}, {}, LoginDto>;
 
-export interface AuthenticatedRequest extends Request {
-    auth: {
-        sub: string;
-        role: string;
-    };
-}
+type AuthClaims = {
+    sub: string;
+    role: string;
+};
+
+export type AuthenticatedRequest = Request & { auth: AuthClaims };
 
 export interface IAuthController {
     register(req: RegisterRequest, res: Response): void;

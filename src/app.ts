@@ -4,8 +4,23 @@ import { HttpError } from "http-errors";
 import logger from "./config/logger";
 import authRouter from "./routes/auth";
 import cookieParser from "cookie-parser";
+import path from "path";
 
 const app = express();
+
+const publicDir = path.join(__dirname, "..", "public");
+
+// Serve ONLY the .well-known directory
+app.use(
+    "/.well-known",
+    express.static(path.join(publicDir, ".well-known"), {
+        dotfiles: "allow",
+        immutable: true,
+        maxAge: "1d",
+        index: false,
+    }),
+);
+
 app.use(express.json());
 app.use(cookieParser());
 
@@ -17,7 +32,8 @@ app.use("/auth", authRouter);
 
 app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {
     logger.error(err.message);
-    res.status(err.statusCode).json({
+    const statusCode = err.statusCode || err.status || 500;
+    res.status(statusCode).json({
         errors: [
             {
                 type: err.name,

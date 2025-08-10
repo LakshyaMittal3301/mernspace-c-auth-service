@@ -100,5 +100,11 @@ describe("GET /auth/self", () => {
             // Check if user id matches with registered user
             expect(response.body).not.toHaveProperty("password");
         });
+
+        it("should return 401 status code when token is not present", async () => {
+            const response = await request(app).get(selfRoute).send();
+
+            expect(response.statusCode).toBe(401);
+        });
     });
 });

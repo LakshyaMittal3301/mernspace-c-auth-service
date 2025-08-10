@@ -32,8 +32,6 @@ router.post("/register", registerValidator, (req: Request, res: Response) => aut
 
 router.post("/login", loginValidator, (req: Request, res: Response) => authController.login(req, res));
 
-router.get("/self", authenticate, (req: Request, res: Response) =>
-    authController.self(req as AuthenticatedRequest, res),
-);
+router.get("/self", authenticate, (req, res) => authController.self(req as AuthenticatedRequest, res));
 
 export default router;
