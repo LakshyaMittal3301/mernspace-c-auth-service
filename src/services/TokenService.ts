@@ -53,7 +53,7 @@ export default class TokenService implements ITokenService {
     }
 
     async deleteToken(refreshTokenId: number): Promise<void> {
-        this.refreshTokenRepository.delete({
+        await this.refreshTokenRepository.delete({
             id: refreshTokenId,
         });
     }

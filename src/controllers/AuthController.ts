@@ -5,14 +5,14 @@ import { IAuthService } from "../interfaces/services/IAuthService";
 
 import { RegisterRequest, LoginRequest, AuthenticatedRequest } from "../types/requests";
 import { Response } from "express";
+import { TokenPair } from "../dtos/auth.dto";
+import { toRefreshDto } from "../mappers/claims.mapper";
 
 import { validationResult } from "express-validator";
 
 import createHttpError from "http-errors";
 import { UserAlreadyExistsError } from "../errors/UserAlreadyExistsError";
 import { InvalidCredentialsError } from "../errors/InvalidCredentialsError";
-import { TokenPair } from "../dtos/auth.dto";
-import { toRefreshDto } from "../mappers/claims.mapper";
 
 export default class AuthController implements IAuthController {
     constructor(
