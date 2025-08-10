@@ -64,9 +64,11 @@ export default class AuthService implements IAuthService {
     }
 
     async refresh(refreshDto: RefreshDto): Promise<TokenPair> {
-        const payload = refreshDto.payload;
+        const payload = refreshDto.appClaims;
         const userId = payload.sub;
-        return this.getAccessAndRefreshTokens(payload, Number(userId));
+        const tokens = await this.getAccessAndRefreshTokens(payload, Number(userId));
+        this.tokenService.deleteToken(Number(refreshDto.jti));
+        return tokens;
     }
 
     private async getAccessAndRefreshTokens(payload: AppClaims, userId: number): Promise<TokenPair> {

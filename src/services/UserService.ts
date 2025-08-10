@@ -31,11 +31,7 @@ export default class UserService implements IUserService {
     }
 
     async findById(id: number): Promise<User> {
-        const user = await this.userRepository.findOne({
-            where: {
-                id,
-            },
-        });
+        const user = await this.userRepository.findOne({ where: { id } });
 
         if (user === null) {
             throw new Error("User with id does not exist");

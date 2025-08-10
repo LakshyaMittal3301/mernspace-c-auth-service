@@ -8,6 +8,7 @@ export const toAppClaims = (fullJwtClaims: FullJwtClaims): AppClaims => {
 
 export const toRefreshDto = (fullJwtClaims: FullJwtClaims): RefreshDto => {
     return {
-        payload: toAppClaims(fullJwtClaims),
+        appClaims: toAppClaims(fullJwtClaims),
+        jti: fullJwtClaims.jti!,
     };
 };

@@ -51,4 +51,10 @@ export default class TokenService implements ITokenService {
         if (!refreshTokenRecord || refreshTokenRecord.expiresAt < new Date()) return true;
         return false;
     }
+
+    async deleteToken(refreshTokenId: number): Promise<void> {
+        this.refreshTokenRepository.delete({
+            id: refreshTokenId,
+        });
+    }
 }

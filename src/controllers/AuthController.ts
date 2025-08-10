@@ -28,9 +28,7 @@ export default class AuthController implements IAuthController {
             }
 
             const { user, tokens } = await this.authService.register(req.body);
-
             this.setTokens(res, tokens);
-
             res.status(201).json({ id: user.id });
         } catch (err) {
             if (err instanceof UserAlreadyExistsError) {

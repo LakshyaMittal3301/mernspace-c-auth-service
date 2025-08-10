@@ -14,7 +14,8 @@ export type LoginDto = {
 };
 
 export type RefreshDto = {
-    payload: AppClaims;
+    appClaims: AppClaims;
+    jti: string;
 };
 
 export type TokenPair = {
