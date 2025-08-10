@@ -1,11 +1,4 @@
-import { JwtPayload } from "jsonwebtoken";
 import { AppClaims } from "../../types/claims";
-
-export type TokenPayload = JwtPayload & {
-    sub: string;
-    email?: string;
-    role?: string;
-};
 
 export interface ITokenService {
     generateAccessToken(payload: AppClaims): string;

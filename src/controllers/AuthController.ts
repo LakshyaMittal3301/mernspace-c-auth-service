@@ -1,12 +1,16 @@
-import { Response } from "express";
-import createHttpError from "http-errors";
-import { Logger } from "winston";
-import { UserAlreadyExistsError } from "../errors/UserAlreadyExistsError";
-import { validationResult } from "express-validator";
-import { IAuthService } from "../interfaces/services/IAuthService";
-import { InvalidCredentialsError } from "../errors/InvalidCredentialsError";
 import { IAuthController } from "../interfaces/controllers/IAuthController";
+
+import { Logger } from "winston";
+import { IAuthService } from "../interfaces/services/IAuthService";
+
 import { RegisterRequest, LoginRequest, AuthenticatedRequest } from "../types/requests";
+import { Response } from "express";
+
+import { validationResult } from "express-validator";
+
+import createHttpError from "http-errors";
+import { UserAlreadyExistsError } from "../errors/UserAlreadyExistsError";
+import { InvalidCredentialsError } from "../errors/InvalidCredentialsError";
 
 export default class AuthController implements IAuthController {
     constructor(
