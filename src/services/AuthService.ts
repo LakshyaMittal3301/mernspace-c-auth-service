@@ -1,5 +1,12 @@
 import { Logger } from "winston";
-import { AuthResult, IAuthService, LoginDto, RegisterDto } from "../interfaces/services/IAuthService";
+import {
+    AuthResult,
+    IAuthService,
+    LoginDto,
+    PublicUserDto,
+    RegisterDto,
+    toPublicUserDto,
+} from "../interfaces/services/IAuthService";
 import { IPasswordService } from "../interfaces/services/IPasswordService";
 import { TokenPayload, ITokenService } from "../interfaces/services/ITokenService";
 import { IUserService } from "../interfaces/services/IUserService";
@@ -38,13 +45,15 @@ export default class AuthService implements IAuthService {
         const accessToken = this.tokenService.generateAccessToken(payload);
         const refreshToken = await this.tokenService.generateRefreshToken(payload, user.id);
 
-        return {
-            user,
+        const authResult: AuthResult = {
+            user: toPublicUserDto(user),
             tokens: {
                 accessToken,
                 refreshToken,
             },
         };
+
+        return authResult;
     }
 
     async login(loginDto: LoginDto): Promise<AuthResult> {
@@ -64,7 +73,7 @@ export default class AuthService implements IAuthService {
         const refreshToken = await this.tokenService.generateRefreshToken(payload, user.id);
 
         return {
-            user,
+            user: toPublicUserDto(user),
             tokens: {
                 accessToken,
                 refreshToken,
@@ -72,7 +81,8 @@ export default class AuthService implements IAuthService {
         };
     }
 
-    findUserById(userId: number): Promise<User> {
-        return this.userService.findById(userId);
+    async findUserById(userId: number): Promise<PublicUserDto> {
+        const user = await this.userService.findById(userId);
+        return toPublicUserDto(user);
     }
 }

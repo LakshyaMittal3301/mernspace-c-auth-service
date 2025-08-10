@@ -91,7 +91,6 @@ export class AuthController implements IAuthController {
     async self(req: AuthenticatedRequest, res: Response) {
         const userId = req.auth.sub;
         const user = await this.authService.findUserById(Number(userId));
-        console.log("User: ", user);
         res.json(user);
     }
 }

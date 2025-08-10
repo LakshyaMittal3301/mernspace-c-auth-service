@@ -80,5 +80,25 @@ describe("GET /auth/self", () => {
             expect(response.body).toHaveProperty("id");
             expect(response.body.id).toBe(newUser.id);
         });
+
+        it("should not return the password in the user data", async () => {
+            const newUser = await createUser(connection, userData);
+
+            // Generate Token
+            const accessToken = jwks.token({
+                sub: String(newUser.id),
+                role: newUser.role,
+            });
+
+            // Add Token to cookies
+
+            const response = await request(app)
+                .get(selfRoute)
+                .set("Cookie", [`accessToken=${accessToken}`])
+                .send();
+
+            // Check if user id matches with registered user
+            expect(response.body).not.toHaveProperty("password");
+        });
     });
 });

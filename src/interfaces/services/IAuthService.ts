@@ -1,5 +1,15 @@
 import { User } from "../../entity/User";
 
+export const toPublicUserDto = (u: User): PublicUserDto => {
+    return {
+        id: u.id,
+        firstName: u.firstName,
+        lastName: u.lastName,
+        email: u.email,
+        createdAt: u.createdAt,
+    };
+};
+
 export type RegisterDto = {
     firstName: string;
     lastName: string;
@@ -12,8 +22,16 @@ export type TokenPair = {
     refreshToken: string;
 };
 
+export type PublicUserDto = {
+    id: number;
+    firstName: string;
+    lastName: string;
+    email: string;
+    createdAt: Date;
+};
+
 export type AuthResult = {
-    user: User;
+    user: PublicUserDto;
     tokens: TokenPair;
 };
 
@@ -25,5 +43,5 @@ export type LoginDto = {
 export interface IAuthService {
     register(registerDto: RegisterDto): Promise<AuthResult>;
     login(loginDto: LoginDto): Promise<AuthResult>;
-    findUserById(userId: number): Promise<User>;
+    findUserById(userId: number): Promise<PublicUserDto>;
 }
