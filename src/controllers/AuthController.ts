@@ -11,12 +11,37 @@ import { validationResult } from "express-validator";
 import createHttpError from "http-errors";
 import { UserAlreadyExistsError } from "../errors/UserAlreadyExistsError";
 import { InvalidCredentialsError } from "../errors/InvalidCredentialsError";
+import { TokenPair } from "../dtos/auth.dto";
+import { toRefreshDto } from "../mappers/claims.mapper";
 
 export default class AuthController implements IAuthController {
     constructor(
         private logger: Logger,
         private authService: IAuthService,
     ) {}
+
+    private setAccessToken(res: Response, accessToken: string) {
+        res.cookie("accessToken", accessToken, {
+            domain: "localhost",
+            sameSite: "strict",
+            maxAge: 1000 * 60 * 60,
+            httpOnly: true,
+        });
+    }
+
+    private setRefreshToken(res: Response, refreshToken: string) {
+        res.cookie("refreshToken", refreshToken, {
+            domain: "localhost",
+            sameSite: "strict",
+            maxAge: 1000 * 60 * 60 * 24 * 365,
+            httpOnly: true,
+        });
+    }
+
+    private setTokens(res: Response, tokens: TokenPair) {
+        this.setAccessToken(res, tokens.accessToken);
+        this.setRefreshToken(res, tokens.refreshToken);
+    }
 
     async register(req: RegisterRequest, res: Response) {
         try {
@@ -27,19 +52,7 @@ export default class AuthController implements IAuthController {
 
             const { user, tokens } = await this.authService.register(req.body);
 
-            res.cookie("accessToken", tokens.accessToken, {
-                domain: "localhost",
-                sameSite: "strict",
-                maxAge: 1000 * 60 * 60,
-                httpOnly: true,
-            });
-
-            res.cookie("refreshToken", tokens.refreshToken, {
-                domain: "localhost",
-                sameSite: "strict",
-                maxAge: 1000 * 60 * 60 * 24 * 365,
-                httpOnly: true,
-            });
+            this.setTokens(res, tokens);
 
             res.status(201).json({ id: user.id });
         } catch (err) {
@@ -61,21 +74,7 @@ export default class AuthController implements IAuthController {
             }
 
             const { user, tokens } = await this.authService.login(req.body);
-
-            res.cookie("accessToken", tokens.accessToken, {
-                domain: "localhost",
-                sameSite: "strict",
-                maxAge: 1000 * 60 * 60,
-                httpOnly: true,
-            });
-
-            res.cookie("refreshToken", tokens.refreshToken, {
-                domain: "localhost",
-                sameSite: "strict",
-                maxAge: 1000 * 60 * 60 * 24 * 365,
-                httpOnly: true,
-            });
-
+            this.setTokens(res, tokens);
             res.status(200).json({ id: user.id });
         } catch (err) {
             if (err instanceof InvalidCredentialsError) {
@@ -96,28 +95,8 @@ export default class AuthController implements IAuthController {
 
     async refresh(req: AuthenticatedRequest, res: Response) {
         try {
-            const { sub, role } = req.auth;
-            const tokens = await this.authService.refresh({
-                payload: {
-                    sub,
-                    role,
-                },
-            });
-
-            res.cookie("accessToken", tokens.accessToken, {
-                domain: "localhost",
-                sameSite: "strict",
-                maxAge: 1000 * 60 * 60,
-                httpOnly: true,
-            });
-
-            res.cookie("refreshToken", tokens.refreshToken, {
-                domain: "localhost",
-                sameSite: "strict",
-                maxAge: 1000 * 60 * 60 * 24 * 365,
-                httpOnly: true,
-            });
-
+            const tokens = await this.authService.refresh(toRefreshDto(req.auth));
+            this.setTokens(res, tokens);
             res.json({});
         } catch (err) {
             this.logger.error("Refresh failed, ", { error: err });
