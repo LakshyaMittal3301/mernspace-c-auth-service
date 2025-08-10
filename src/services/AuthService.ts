@@ -8,6 +8,7 @@ import { toPublicUserDto } from "../mappers/user.mapper";
 import { RegisterDto, AuthResult, LoginDto, RefreshDto, TokenPair } from "../dtos/auth.dto";
 import { PublicUserDto } from "../dtos/user.dto";
 import { AppClaims } from "../types/claims";
+import { toAuthResult, toTokenPair } from "../mappers/auth.mapper";
 
 export default class AuthService implements IAuthService {
     constructor(
@@ -38,18 +39,7 @@ export default class AuthService implements IAuthService {
             role: user.role,
         };
 
-        const accessToken = this.tokenService.generateAccessToken(payload);
-        const refreshToken = await this.tokenService.generateRefreshToken(payload, user.id);
-
-        const authResult: AuthResult = {
-            user: toPublicUserDto(user),
-            tokens: {
-                accessToken,
-                refreshToken,
-            },
-        };
-
-        return authResult;
+        return toAuthResult(user, await this.getAccessAndRefreshTokens(payload, user.id));
     }
 
     async login(loginDto: LoginDto): Promise<AuthResult> {
@@ -65,16 +55,7 @@ export default class AuthService implements IAuthService {
             role: user.role,
         };
 
-        const accessToken = this.tokenService.generateAccessToken(payload);
-        const refreshToken = await this.tokenService.generateRefreshToken(payload, user.id);
-
-        return {
-            user: toPublicUserDto(user),
-            tokens: {
-                accessToken,
-                refreshToken,
-            },
-        };
+        return toAuthResult(user, await this.getAccessAndRefreshTokens(payload, user.id));
     }
 
     async whoAmI(userId: number): Promise<PublicUserDto> {
@@ -85,12 +66,13 @@ export default class AuthService implements IAuthService {
     async refresh(refreshDto: RefreshDto): Promise<TokenPair> {
         const payload = refreshDto.payload;
         const userId = payload.sub;
-        const accessToken = this.tokenService.generateAccessToken(payload);
-        const refreshToken = await this.tokenService.generateRefreshToken(payload, Number(userId));
+        return this.getAccessAndRefreshTokens(payload, Number(userId));
+    }
 
-        return {
-            accessToken,
-            refreshToken,
-        };
+    private async getAccessAndRefreshTokens(payload: AppClaims, userId: number): Promise<TokenPair> {
+        const accessToken = this.tokenService.generateAccessToken(payload);
+        const refreshToken = await this.tokenService.generateRefreshToken(payload, userId);
+
+        return toTokenPair(accessToken, refreshToken);
     }
 }

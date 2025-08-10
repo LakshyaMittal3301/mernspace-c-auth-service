@@ -20,29 +20,6 @@ export default class AuthController implements IAuthController {
         private authService: IAuthService,
     ) {}
 
-    private setAccessToken(res: Response, accessToken: string) {
-        res.cookie("accessToken", accessToken, {
-            domain: "localhost",
-            sameSite: "strict",
-            maxAge: 1000 * 60 * 60,
-            httpOnly: true,
-        });
-    }
-
-    private setRefreshToken(res: Response, refreshToken: string) {
-        res.cookie("refreshToken", refreshToken, {
-            domain: "localhost",
-            sameSite: "strict",
-            maxAge: 1000 * 60 * 60 * 24 * 365,
-            httpOnly: true,
-        });
-    }
-
-    private setTokens(res: Response, tokens: TokenPair) {
-        this.setAccessToken(res, tokens.accessToken);
-        this.setRefreshToken(res, tokens.refreshToken);
-    }
-
     async register(req: RegisterRequest, res: Response) {
         try {
             const result = validationResult(req);
@@ -102,5 +79,28 @@ export default class AuthController implements IAuthController {
             this.logger.error("Refresh failed, ", { error: err });
             throw createHttpError(400, "Refresh Failed");
         }
+    }
+
+    private setAccessToken(res: Response, accessToken: string) {
+        res.cookie("accessToken", accessToken, {
+            domain: "localhost",
+            sameSite: "strict",
+            maxAge: 1000 * 60 * 60,
+            httpOnly: true,
+        });
+    }
+
+    private setRefreshToken(res: Response, refreshToken: string) {
+        res.cookie("refreshToken", refreshToken, {
+            domain: "localhost",
+            sameSite: "strict",
+            maxAge: 1000 * 60 * 60 * 24 * 365,
+            httpOnly: true,
+        });
+    }
+
+    private setTokens(res: Response, tokens: TokenPair) {
+        this.setAccessToken(res, tokens.accessToken);
+        this.setRefreshToken(res, tokens.refreshToken);
     }
 }
