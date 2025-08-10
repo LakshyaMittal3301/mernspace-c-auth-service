@@ -1,19 +1,13 @@
 import { Logger } from "winston";
-import {
-    AuthResult,
-    IAuthService,
-    LoginDto,
-    PublicUserDto,
-    RefreshDto,
-    RegisterDto,
-    TokenPair,
-    toPublicUserDto,
-} from "../interfaces/services/IAuthService";
 import { IPasswordService } from "../interfaces/services/IPasswordService";
 import { ITokenService } from "../interfaces/services/ITokenService";
 import { IUserService } from "../interfaces/services/IUserService";
 import { InvalidCredentialsError } from "../errors/InvalidCredentialsError";
-import { AppClaims } from "../interfaces/controllers/IAuthController";
+import { IAuthService } from "../interfaces/services/IAuthService";
+import { toPublicUserDto } from "../mappers/user.mapper";
+import { RegisterDto, AuthResult, LoginDto, RefreshDto, TokenPair } from "../dtos/auth.dto";
+import { PublicUserDto } from "../dtos/user.dto";
+import { AppClaims } from "../types/claims";
 
 export default class AuthService implements IAuthService {
     constructor(

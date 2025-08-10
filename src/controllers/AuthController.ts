@@ -5,14 +5,10 @@ import { UserAlreadyExistsError } from "../errors/UserAlreadyExistsError";
 import { validationResult } from "express-validator";
 import { IAuthService } from "../interfaces/services/IAuthService";
 import { InvalidCredentialsError } from "../errors/InvalidCredentialsError";
-import {
-    AuthenticatedRequest,
-    IAuthController,
-    LoginRequest,
-    RegisterRequest,
-} from "../interfaces/controllers/IAuthController";
+import { IAuthController } from "../interfaces/controllers/IAuthController";
+import { RegisterRequest, LoginRequest, AuthenticatedRequest } from "../types/requests";
 
-export class AuthController implements IAuthController {
+export default class AuthController implements IAuthController {
     constructor(
         private logger: Logger,
         private authService: IAuthService,

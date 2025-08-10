@@ -1,5 +1,5 @@
 import { JwtPayload } from "jsonwebtoken";
-import { AppClaims } from "../controllers/IAuthController";
+import { AppClaims } from "../../types/claims";
 
 export type TokenPayload = JwtPayload & {
     sub: string;

@@ -4,8 +4,8 @@ import path from "path";
 import { Repository } from "typeorm";
 import { RefreshToken } from "../entity/RefreshToken";
 import { Config } from "../config";
-import { ITokenService, TokenPayload } from "../interfaces/services/ITokenService";
-import { AppClaims } from "../interfaces/controllers/IAuthController";
+import { ITokenService } from "../interfaces/services/ITokenService";
+import { AppClaims } from "../types/claims";
 
 export default class TokenService implements ITokenService {
     private privateKey: Buffer;

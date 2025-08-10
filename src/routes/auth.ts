@@ -1,35 +1,44 @@
-import express from "express";
-import { AuthController } from "../controllers/AuthController";
-import UserService from "../services/UserService";
 import { AppDataSource } from "../config/data-source";
-import { User } from "../entity/User";
-import logger from "../config/logger";
-import registerValidator from "../validators/register-validator";
-import { Request, Response } from "express";
-import TokenService from "../services/TokenService";
 import { RefreshToken } from "../entity/RefreshToken";
-import PasswordService from "../services/PasswordService";
+import { User } from "../entity/User";
+
+import logger from "../config/logger";
+
 import AuthService from "../services/AuthService";
+import PasswordService from "../services/PasswordService";
+import TokenService from "../services/TokenService";
+import UserService from "../services/UserService";
+
+import AuthController from "../controllers/AuthController";
+
+import registerValidator from "../validators/register-validator";
 import loginValidator from "../validators/login-validator";
-import authenticate from "../middlewares/authenticate";
-import { AuthenticatedRequest } from "../interfaces/controllers/IAuthController";
+
+import { makeAuthenticateMiddleware } from "../middlewares/authenticate";
 import { makeRefreshJwtMiddleware } from "../middlewares/validateRefreshToken";
 
-const router = express.Router();
+import express, { Request, Response } from "express";
 
+import { AuthenticatedRequest } from "../types/requests";
+
+// Repositories
 const userRepository = AppDataSource.getRepository(User);
-const userService = new UserService(userRepository);
-
 const tokenRepository = AppDataSource.getRepository(RefreshToken);
+
+// Services
+const userService = new UserService(userRepository);
 const tokenService = new TokenService(tokenRepository);
-
 const passwordService = new PasswordService();
-
 const authService = new AuthService(logger, userService, passwordService, tokenService);
 
+// Controllers
 const authController = new AuthController(logger, authService);
 
+// Middlewares
+const authenticate = makeAuthenticateMiddleware();
 const validateRefreshToken = makeRefreshJwtMiddleware(tokenService);
+
+const router = express.Router();
 
 router.post("/register", registerValidator, (req: Request, res: Response) => authController.register(req, res));
 
