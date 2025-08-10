@@ -1,4 +1,6 @@
 import { User } from "../../entity/User";
+import { AppClaims } from "../controllers/IAuthController";
+import { TokenPayload } from "./ITokenService";
 
 export const toPublicUserDto = (u: User): PublicUserDto => {
     return {
@@ -40,8 +42,13 @@ export type LoginDto = {
     password: string;
 };
 
+export type RefreshDto = {
+    payload: AppClaims;
+};
+
 export interface IAuthService {
     register(registerDto: RegisterDto): Promise<AuthResult>;
     login(loginDto: LoginDto): Promise<AuthResult>;
-    findUserById(userId: number): Promise<PublicUserDto>;
+    whoAmI(userId: number): Promise<PublicUserDto>;
+    refresh(refreshDto: RefreshDto): Promise<TokenPair>;
 }

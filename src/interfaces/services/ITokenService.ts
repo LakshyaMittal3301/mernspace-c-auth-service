@@ -1,4 +1,5 @@
 import { JwtPayload } from "jsonwebtoken";
+import { AppClaims } from "../controllers/IAuthController";
 
 export type TokenPayload = JwtPayload & {
     sub: string;
@@ -7,6 +8,7 @@ export type TokenPayload = JwtPayload & {
 };
 
 export interface ITokenService {
-    generateAccessToken(payload: TokenPayload): string;
-    generateRefreshToken(payload: TokenPayload, userId: number): Promise<string>;
+    generateAccessToken(payload: AppClaims): string;
+    generateRefreshToken(payload: AppClaims, userId: number): Promise<string>;
+    isRefreshTokenRevoked(refreshTokenId: number, userId: number): Promise<boolean>;
 }

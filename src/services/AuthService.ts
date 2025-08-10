@@ -4,14 +4,16 @@ import {
     IAuthService,
     LoginDto,
     PublicUserDto,
+    RefreshDto,
     RegisterDto,
+    TokenPair,
     toPublicUserDto,
 } from "../interfaces/services/IAuthService";
 import { IPasswordService } from "../interfaces/services/IPasswordService";
-import { TokenPayload, ITokenService } from "../interfaces/services/ITokenService";
+import { ITokenService } from "../interfaces/services/ITokenService";
 import { IUserService } from "../interfaces/services/IUserService";
 import { InvalidCredentialsError } from "../errors/InvalidCredentialsError";
-import { User } from "../entity/User";
+import { AppClaims } from "../interfaces/controllers/IAuthController";
 
 export default class AuthService implements IAuthService {
     constructor(
@@ -37,7 +39,7 @@ export default class AuthService implements IAuthService {
         this.logger.info(`User created successfully`, { id: user.id });
 
         // Get Access Token and Refresh Token
-        const payload: TokenPayload = {
+        const payload: AppClaims = {
             sub: String(user.id),
             role: user.role,
         };
@@ -64,7 +66,7 @@ export default class AuthService implements IAuthService {
             throw new InvalidCredentialsError();
         }
 
-        const payload: TokenPayload = {
+        const payload: AppClaims = {
             sub: String(user.id),
             role: user.role,
         };
@@ -81,8 +83,20 @@ export default class AuthService implements IAuthService {
         };
     }
 
-    async findUserById(userId: number): Promise<PublicUserDto> {
+    async whoAmI(userId: number): Promise<PublicUserDto> {
         const user = await this.userService.findById(userId);
         return toPublicUserDto(user);
+    }
+
+    async refresh(refreshDto: RefreshDto): Promise<TokenPair> {
+        const payload = refreshDto.payload;
+        const userId = payload.sub;
+        const accessToken = this.tokenService.generateAccessToken(payload);
+        const refreshToken = await this.tokenService.generateRefreshToken(payload, Number(userId));
+
+        return {
+            accessToken,
+            refreshToken,
+        };
     }
 }

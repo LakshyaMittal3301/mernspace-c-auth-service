@@ -13,6 +13,7 @@ import AuthService from "../services/AuthService";
 import loginValidator from "../validators/login-validator";
 import authenticate from "../middlewares/authenticate";
 import { AuthenticatedRequest } from "../interfaces/controllers/IAuthController";
+import { makeRefreshJwtMiddleware } from "../middlewares/validateRefreshToken";
 
 const router = express.Router();
 
@@ -28,10 +29,14 @@ const authService = new AuthService(logger, userService, passwordService, tokenS
 
 const authController = new AuthController(logger, authService);
 
+const validateRefreshToken = makeRefreshJwtMiddleware(tokenService);
+
 router.post("/register", registerValidator, (req: Request, res: Response) => authController.register(req, res));
 
 router.post("/login", loginValidator, (req: Request, res: Response) => authController.login(req, res));
 
 router.get("/self", authenticate, (req, res) => authController.self(req as AuthenticatedRequest, res));
+
+router.post("/refresh", validateRefreshToken, (req, res) => authController.refresh(req as AuthenticatedRequest, res));
 
 export default router;

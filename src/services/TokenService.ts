@@ -5,6 +5,7 @@ import { Repository } from "typeorm";
 import { RefreshToken } from "../entity/RefreshToken";
 import { Config } from "../config";
 import { ITokenService, TokenPayload } from "../interfaces/services/ITokenService";
+import { AppClaims } from "../interfaces/controllers/IAuthController";
 
 export default class TokenService implements ITokenService {
     private privateKey: Buffer;
@@ -13,7 +14,7 @@ export default class TokenService implements ITokenService {
         this.privateKey = fs.readFileSync(path.join(__dirname, "../../certs/private.pem"));
     }
 
-    generateAccessToken(payload: JwtPayload): string {
+    generateAccessToken(payload: AppClaims): string {
         return sign(payload, this.privateKey, {
             algorithm: "RS256",
             expiresIn: "1h",
@@ -21,7 +22,7 @@ export default class TokenService implements ITokenService {
         });
     }
 
-    async generateRefreshToken(payload: TokenPayload, userId: number): Promise<string> {
+    async generateRefreshToken(payload: AppClaims, userId: number): Promise<string> {
         const MS_IN_YEAR = 1000 * 60 * 60 * 24 * 365;
 
         const newRefreshTokenRecord = await this.refreshTokenRepository.save({
@@ -37,5 +38,17 @@ export default class TokenService implements ITokenService {
         });
 
         return refreshToken;
+    }
+
+    async isRefreshTokenRevoked(refreshTokenId: number, userId: number): Promise<boolean> {
+        const refreshTokenRecord = await this.refreshTokenRepository.findOne({
+            where: {
+                id: refreshTokenId,
+                user: { id: userId },
+            },
+        });
+
+        if (!refreshTokenRecord || refreshTokenRecord.expiresAt < new Date()) return true;
+        return false;
     }
 }

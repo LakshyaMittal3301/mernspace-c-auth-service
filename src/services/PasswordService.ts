@@ -7,7 +7,7 @@ export default class PasswordService implements IPasswordService {
         return bcrypt.hash(password, saltRounds);
     }
 
-    comparePassword(plain: string, digest: string): Promise<Boolean> {
+    comparePassword(plain: string, digest: string): Promise<boolean> {
         return bcrypt.compare(plain, digest);
     }
 }

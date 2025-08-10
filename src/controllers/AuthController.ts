@@ -90,7 +90,38 @@ export class AuthController implements IAuthController {
 
     async self(req: AuthenticatedRequest, res: Response) {
         const userId = req.auth.sub;
-        const user = await this.authService.findUserById(Number(userId));
+        const user = await this.authService.whoAmI(Number(userId));
         res.json(user);
+    }
+
+    async refresh(req: AuthenticatedRequest, res: Response) {
+        try {
+            const { sub, role } = req.auth;
+            const tokens = await this.authService.refresh({
+                payload: {
+                    sub,
+                    role,
+                },
+            });
+
+            res.cookie("accessToken", tokens.accessToken, {
+                domain: "localhost",
+                sameSite: "strict",
+                maxAge: 1000 * 60 * 60,
+                httpOnly: true,
+            });
+
+            res.cookie("refreshToken", tokens.refreshToken, {
+                domain: "localhost",
+                sameSite: "strict",
+                maxAge: 1000 * 60 * 60 * 24 * 365,
+                httpOnly: true,
+            });
+
+            res.json({});
+        } catch (err) {
+            this.logger.error("Refresh failed, ", { error: err });
+            throw createHttpError(400, "Refresh Failed");
+        }
     }
 }
