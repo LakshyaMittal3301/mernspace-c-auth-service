@@ -1,17 +1,22 @@
 import { AuthResult, TokenPair } from "../dtos/auth.dto";
 import { User } from "../entity/User";
-import { toPublicUserDto } from "./user.mapper";
+import { AccessTokenClaims } from "../types/claims";
+import { buildPublicUserDto } from "./user.mapper";
 
-export const toAuthResult = (user: User, tokenPair: TokenPair): AuthResult => {
+export const buildAuthResult = (user: User, tokenPair: TokenPair): AuthResult => {
     return {
-        user: toPublicUserDto(user),
+        user: buildPublicUserDto(user),
         tokens: tokenPair,
     };
 };
 
-export const toTokenPair = (accessToken: string, refreshToken: string): TokenPair => {
+export const buildTokenPair = (accessToken: string, refreshToken: string): TokenPair => {
     return {
         accessToken,
         refreshToken,
     };
+};
+
+export const buildAccessTokenClaims = (userId: number, role: string): AccessTokenClaims => {
+    return { sub: String(userId), role };
 };

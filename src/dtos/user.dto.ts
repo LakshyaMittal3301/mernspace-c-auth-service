@@ -3,6 +3,7 @@ export type CreateUserParams = {
     lastName: string;
     email: string;
     hashedPassword: string;
+    role?: string;
 };
 
 export type PublicUserDto = {

@@ -11,6 +11,8 @@ export const makeAuthenticateMiddleware = () =>
             rateLimit: true,
         }),
 
+        requestProperty: "auth",
+
         algorithms: ["RS256"],
         getToken(req: Request) {
             const authHeader = req.headers.authorization;

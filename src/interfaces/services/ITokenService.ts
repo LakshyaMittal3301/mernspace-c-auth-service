@@ -1,8 +1,8 @@
-import { AppClaims } from "../../types/claims";
+import { AccessTokenClaims } from "../../types/claims";
 
 export interface ITokenService {
-    generateAccessToken(payload: AppClaims): string;
-    generateRefreshToken(payload: AppClaims, userId: number): Promise<string>;
-    isRefreshTokenRevoked(refreshTokenId: number, userId: number): Promise<boolean>;
-    deleteToken(refreshTokenId: number): Promise<void>;
+    generateAccessToken(claims: AccessTokenClaims): string;
+    generateRefreshToken(userId: number): Promise<string>;
+    isRefreshTokenActive(refreshTokenId: string, userId?: number): Promise<boolean>;
+    revokeRefreshToken(refreshTokenId: string): Promise<void>;
 }

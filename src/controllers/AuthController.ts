@@ -3,10 +3,9 @@ import { IAuthController } from "../interfaces/controllers/IAuthController";
 import { Logger } from "winston";
 import { IAuthService } from "../interfaces/services/IAuthService";
 
-import { RegisterRequest, LoginRequest, AuthenticatedRequest } from "../types/requests";
+import { RegisterRequest, LoginRequest, AuthenticatedRequest, RefreshRequest } from "../types/requests";
 import { Response } from "express";
 import { TokenPair } from "../dtos/auth.dto";
-import { toRefreshDto } from "../mappers/claims.mapper";
 
 import { validationResult } from "express-validator";
 
@@ -70,9 +69,11 @@ export default class AuthController implements IAuthController {
         res.json(user);
     }
 
-    async refresh(req: AuthenticatedRequest, res: Response) {
+    async refresh(req: RefreshRequest, res: Response) {
         try {
-            const tokens = await this.authService.refresh(toRefreshDto(req.auth));
+            const userId = Number(req.refresh.sub);
+            const refreshTokenId = req.refresh.jti;
+            const tokens = await this.authService.refresh({ userId, refreshTokenId });
             this.setTokens(res, tokens);
             res.json({});
         } catch (err) {

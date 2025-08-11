@@ -1,8 +1,9 @@
-import { JwtPayload } from "jsonwebtoken";
-
-export type AppClaims = {
+export type AccessTokenClaims = {
     sub: string;
     role: string;
 };
 
-export type FullJwtClaims = JwtPayload & AppClaims;
+export type RefreshTokenClaims = {
+    sub: string;
+    jti: string;
+};

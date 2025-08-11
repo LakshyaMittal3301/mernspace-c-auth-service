@@ -8,11 +8,16 @@ import { JwtPayload } from "jsonwebtoken";
 export const makeValidateRefreshTokenMiddleware = (tokenService: ITokenService) =>
     expressjwt({
         secret: Config.REFRESH_TOKEN_SECRET!,
+
+        requestProperty: "refresh",
+
         algorithms: ["HS256"],
+
         getToken(req: Request) {
             const { refreshToken } = req.cookies;
             return refreshToken;
         },
+
         async isRevoked(req, token) {
             if (!token) return true;
             try {
@@ -22,8 +27,8 @@ export const makeValidateRefreshTokenMiddleware = (tokenService: ITokenService) 
 
                 if (!jti || !sub) return true;
 
-                const revoked = await tokenService.isRefreshTokenRevoked(Number(jti), Number(sub));
-                return revoked;
+                const active = await tokenService.isRefreshTokenActive(jti, Number(sub));
+                return !active;
             } catch (err) {
                 logger.error("Error while checking if refresh token is revoked", {
                     tokenPayload: token.payload,

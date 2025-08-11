@@ -8,34 +8,24 @@ import { CreateUserParams } from "../dtos/user.dto";
 export default class UserService implements IUserService {
     constructor(private userRepository: Repository<User>) {}
 
-    async createWithHash({ firstName, lastName, email, hashedPassword }: CreateUserParams): Promise<User> {
-        const user = await this.userRepository.findOne({
-            where: { email: email },
-        });
-
-        if (user) {
-            throw new UserAlreadyExistsError(email);
-        }
+    async createWithHash({ firstName, lastName, email, hashedPassword, role }: CreateUserParams): Promise<User> {
+        const existingUser = await this.userRepository.findOne({ where: { email: email } });
+        if (existingUser) throw new UserAlreadyExistsError(email);
 
         return await this.userRepository.save({
             firstName,
             lastName,
             email,
             password: hashedPassword,
-            role: Roles.CUSTOMER,
+            role: role ?? Roles.CUSTOMER,
         });
     }
 
-    findByEmail(email: string): Promise<User | null> {
+    async findByEmail(email: string): Promise<User | null> {
         return this.userRepository.findOne({ where: { email } });
     }
 
-    async findById(id: number): Promise<User> {
-        const user = await this.userRepository.findOne({ where: { id } });
-
-        if (user === null) {
-            throw new Error("User with id does not exist");
-        }
-        return user;
+    async findById(id: number): Promise<User | null> {
+        return this.userRepository.findOne({ where: { id } });
     }
 }

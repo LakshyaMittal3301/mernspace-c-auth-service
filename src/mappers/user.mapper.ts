@@ -1,7 +1,7 @@
 import { PublicUserDto } from "../dtos/user.dto";
 import { User } from "../entity/User";
 
-export const toPublicUserDto = (u: User): PublicUserDto => {
+export const buildPublicUserDto = (u: User): PublicUserDto => {
     return {
         id: u.id,
         firstName: u.firstName,

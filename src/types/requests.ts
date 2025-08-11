@@ -1,9 +1,11 @@
 import { Request } from "express";
-import { FullJwtClaims } from "./claims";
 import { RegisterDto, LoginDto } from "../dtos/auth.dto";
+import { AccessTokenClaims, RefreshTokenClaims } from "./claims";
 
 export type RegisterRequest = Request<{}, {}, RegisterDto>;
 
 export type LoginRequest = Request<{}, {}, LoginDto>;
 
-export type AuthenticatedRequest = Request & { auth: FullJwtClaims };
+export type AuthenticatedRequest = Request & { auth: AccessTokenClaims };
+
+export type RefreshRequest = Request & { refresh: RefreshTokenClaims };

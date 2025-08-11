@@ -1,4 +1,3 @@
-import { AppClaims } from "../types/claims";
 import { PublicUserDto } from "./user.dto";
 
 export type RegisterDto = {
@@ -14,8 +13,8 @@ export type LoginDto = {
 };
 
 export type RefreshDto = {
-    appClaims: AppClaims;
-    jti: string;
+    userId: number;
+    refreshTokenId: string;
 };
 
 export type TokenPair = {

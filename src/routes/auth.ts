@@ -19,7 +19,7 @@ import { makeValidateRefreshTokenMiddleware } from "../middlewares/validateRefre
 
 import express, { Request, Response } from "express";
 
-import { AuthenticatedRequest } from "../types/requests";
+import { AuthenticatedRequest, RefreshRequest } from "../types/requests";
 import { makeParseRefreshTokenMiddleware } from "../middlewares/parseRefreshToken";
 
 // Repositories
@@ -47,6 +47,6 @@ const router = express.Router();
 router.post("/register", registerValidator, (req: Request, res: Response) => authController.register(req, res));
 router.post("/login", loginValidator, (req: Request, res: Response) => authController.login(req, res));
 router.get("/self", authenticate, (req, res) => authController.self(req as AuthenticatedRequest, res));
-router.post("/refresh", validateRefreshToken, (req, res) => authController.refresh(req as AuthenticatedRequest, res));
+router.post("/refresh", validateRefreshToken, (req, res) => authController.refresh(req as RefreshRequest, res));
 
 export default router;

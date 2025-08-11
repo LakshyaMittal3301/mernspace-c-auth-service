@@ -4,11 +4,12 @@ import { ITokenService } from "../interfaces/services/ITokenService";
 import { IUserService } from "../interfaces/services/IUserService";
 import { InvalidCredentialsError } from "../errors/InvalidCredentialsError";
 import { IAuthService } from "../interfaces/services/IAuthService";
-import { toPublicUserDto } from "../mappers/user.mapper";
+import { buildPublicUserDto } from "../mappers/user.mapper";
 import { RegisterDto, AuthResult, LoginDto, RefreshDto, TokenPair } from "../dtos/auth.dto";
 import { PublicUserDto } from "../dtos/user.dto";
-import { AppClaims } from "../types/claims";
-import { toAuthResult, toTokenPair } from "../mappers/auth.mapper";
+import { buildAccessTokenClaims, buildAuthResult, buildTokenPair } from "../mappers/auth.mapper";
+import { AccessTokenClaims } from "../types/claims";
+import { UserNotFoundError } from "../errors/UserNotFoundError";
 
 export default class AuthService implements IAuthService {
     constructor(
@@ -21,10 +22,8 @@ export default class AuthService implements IAuthService {
     async register(registerDto: RegisterDto): Promise<AuthResult> {
         const { firstName, lastName, email, password } = registerDto;
 
-        // Hashing Password
         const hashedPassword = await this.passwordService.hashPassword(password);
 
-        // Saving user
         const user = await this.userService.createWithHash({
             firstName,
             lastName,
@@ -33,48 +32,40 @@ export default class AuthService implements IAuthService {
         });
         this.logger.info(`User created successfully`, { id: user.id });
 
-        // Get Access Token and Refresh Token
-        const payload: AppClaims = {
-            sub: String(user.id),
-            role: user.role,
-        };
-
-        return toAuthResult(user, await this.getAccessAndRefreshTokens(payload, user.id));
+        const tokens = await this.getAccessAndRefreshTokens(user.id, user.role);
+        return buildAuthResult(user, tokens);
     }
 
     async login(loginDto: LoginDto): Promise<AuthResult> {
         const { email, password } = loginDto;
 
         const user = await this.userService.findByEmail(email);
-        if (user === null || !(await this.passwordService.comparePassword(password, user.password))) {
+        if (!user || !(await this.passwordService.comparePassword(password, user.password))) {
             throw new InvalidCredentialsError();
         }
-
-        const payload: AppClaims = {
-            sub: String(user.id),
-            role: user.role,
-        };
-
-        return toAuthResult(user, await this.getAccessAndRefreshTokens(payload, user.id));
+        const tokens = await this.getAccessAndRefreshTokens(user.id, user.role);
+        return buildAuthResult(user, tokens);
     }
 
     async whoAmI(userId: number): Promise<PublicUserDto> {
         const user = await this.userService.findById(userId);
-        return toPublicUserDto(user);
+        if (!user) throw new UserNotFoundError();
+        return buildPublicUserDto(user);
     }
 
-    async refresh(refreshDto: RefreshDto): Promise<TokenPair> {
-        const payload = refreshDto.appClaims;
-        const userId = payload.sub;
-        const tokens = await this.getAccessAndRefreshTokens(payload, Number(userId));
-        this.tokenService.deleteToken(Number(refreshDto.jti));
-        return tokens;
+    async refresh({ userId, refreshTokenId }: RefreshDto): Promise<TokenPair> {
+        await this.tokenService.revokeRefreshToken(refreshTokenId);
+
+        const user = await this.userService.findById(userId);
+        if (!user) throw new UserNotFoundError();
+        return this.getAccessAndRefreshTokens(user.id, user.role);
     }
 
-    private async getAccessAndRefreshTokens(payload: AppClaims, userId: number): Promise<TokenPair> {
-        const accessToken = this.tokenService.generateAccessToken(payload);
-        const refreshToken = await this.tokenService.generateRefreshToken(payload, userId);
+    private async getAccessAndRefreshTokens(userId: number, role: string): Promise<TokenPair> {
+        const accessTokenClaims = buildAccessTokenClaims(userId, role);
+        const accessToken = this.tokenService.generateAccessToken(accessTokenClaims);
+        const refreshToken = await this.tokenService.generateRefreshToken(userId);
 
-        return toTokenPair(accessToken, refreshToken);
+        return buildTokenPair(accessToken, refreshToken);
     }
 }
