@@ -15,11 +15,12 @@ import registerValidator from "../validators/register-validator";
 import loginValidator from "../validators/login-validator";
 
 import { makeAuthenticateMiddleware } from "../middlewares/authenticate";
-import { makeRefreshJwtMiddleware } from "../middlewares/validateRefreshToken";
+import { makeValidateRefreshTokenMiddleware } from "../middlewares/validateRefreshToken";
 
 import express, { Request, Response } from "express";
 
 import { AuthenticatedRequest } from "../types/requests";
+import { makeParseRefreshTokenMiddleware } from "../middlewares/parseRefreshToken";
 
 // Repositories
 const userRepository = AppDataSource.getRepository(User);
@@ -36,7 +37,8 @@ const authController = new AuthController(logger, authService);
 
 // Middlewares
 const authenticate = makeAuthenticateMiddleware();
-const validateRefreshToken = makeRefreshJwtMiddleware(tokenService);
+const validateRefreshToken = makeValidateRefreshTokenMiddleware(tokenService);
+const parseRefreshToken = makeParseRefreshTokenMiddleware();
 
 // Router
 const router = express.Router();

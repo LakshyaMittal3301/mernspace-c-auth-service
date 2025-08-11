@@ -3,9 +3,9 @@ import { Config } from "../config";
 import { Request } from "express";
 import { ITokenService } from "../interfaces/services/ITokenService";
 import logger from "../config/logger";
-import { Jwt, JwtPayload } from "jsonwebtoken";
+import { JwtPayload } from "jsonwebtoken";
 
-export const makeRefreshJwtMiddleware = (tokenService: ITokenService) =>
+export const makeValidateRefreshTokenMiddleware = (tokenService: ITokenService) =>
     expressjwt({
         secret: Config.REFRESH_TOKEN_SECRET!,
         algorithms: ["HS256"],

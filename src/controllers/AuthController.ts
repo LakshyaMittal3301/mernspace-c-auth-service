@@ -20,11 +20,12 @@ export default class AuthController implements IAuthController {
         private authService: IAuthService,
     ) {}
 
-    async register(req: RegisterRequest, res: Response) {
+    async register(req: RegisterRequest, res: Response): Promise<void> {
         try {
             const result = validationResult(req);
             if (!result.isEmpty()) {
-                return res.status(400).json({ errors: result.array() });
+                res.status(400).json({ errors: result.array() });
+                return;
             }
 
             const { user, tokens } = await this.authService.register(req.body);
@@ -41,11 +42,12 @@ export default class AuthController implements IAuthController {
         }
     }
 
-    async login(req: LoginRequest, res: Response) {
+    async login(req: LoginRequest, res: Response): Promise<void> {
         try {
             const result = validationResult(req);
             if (!result.isEmpty()) {
-                return res.status(400).json({ errors: result.array() });
+                res.status(400).json({ errors: result.array() });
+                return;
             }
 
             const { user, tokens } = await this.authService.login(req.body);
@@ -62,7 +64,7 @@ export default class AuthController implements IAuthController {
         }
     }
 
-    async self(req: AuthenticatedRequest, res: Response) {
+    async self(req: AuthenticatedRequest, res: Response): Promise<void> {
         const userId = req.auth.sub;
         const user = await this.authService.whoAmI(Number(userId));
         res.json(user);
