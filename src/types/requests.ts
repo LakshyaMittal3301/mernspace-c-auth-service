@@ -9,3 +9,8 @@ export type LoginRequest = Request<{}, {}, LoginDto>;
 export type AuthenticatedRequest = Request & { auth: AccessTokenClaims };
 
 export type RefreshRequest = Request & { refresh: RefreshTokenClaims };
+
+export type AuthenticatedRefreshRequest = Request & {
+    auth: AccessTokenClaims;
+    refresh: RefreshTokenClaims;
+};

@@ -3,7 +3,13 @@ import { IAuthController } from "../interfaces/controllers/IAuthController";
 import { Logger } from "winston";
 import { IAuthService } from "../interfaces/services/IAuthService";
 
-import { RegisterRequest, LoginRequest, AuthenticatedRequest, RefreshRequest } from "../types/requests";
+import {
+    RegisterRequest,
+    LoginRequest,
+    AuthenticatedRequest,
+    RefreshRequest,
+    AuthenticatedRefreshRequest,
+} from "../types/requests";
 import { Response } from "express";
 import { TokenPair } from "../dtos/auth.dto";
 
@@ -82,8 +88,29 @@ export default class AuthController implements IAuthController {
         }
     }
 
+    async logout(req: AuthenticatedRefreshRequest, res: Response): Promise<void> {
+        try {
+            const { jti: refreshTokenId } = req.refresh;
+            await this.authService.logout({ refreshTokenId });
+        } catch (err) {
+            this.logger.error("Logout Failed", { error: err });
+        } finally {
+            this.clearTokens(res);
+            res.status(204).end();
+        }
+    }
+
     private setAccessToken(res: Response, accessToken: string) {
         res.cookie("accessToken", accessToken, {
+            domain: "localhost",
+            sameSite: "strict",
+            maxAge: 1000 * 60 * 60,
+            httpOnly: true,
+        });
+    }
+
+    private clearAccessToken(res: Response) {
+        res.clearCookie("accessToken", {
             domain: "localhost",
             sameSite: "strict",
             maxAge: 1000 * 60 * 60,
@@ -100,8 +127,22 @@ export default class AuthController implements IAuthController {
         });
     }
 
+    private clearRefreshToken(res: Response) {
+        res.clearCookie("refreshToken", {
+            domain: "localhost",
+            sameSite: "strict",
+            maxAge: 1000 * 60 * 60 * 24 * 365,
+            httpOnly: true,
+        });
+    }
+
     private setTokens(res: Response, tokens: TokenPair) {
         this.setAccessToken(res, tokens.accessToken);
         this.setRefreshToken(res, tokens.refreshToken);
+    }
+
+    private clearTokens(res: Response) {
+        this.clearAccessToken(res);
+        this.clearRefreshToken(res);
     }
 }

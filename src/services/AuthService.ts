@@ -5,10 +5,9 @@ import { IUserService } from "../interfaces/services/IUserService";
 import { InvalidCredentialsError } from "../errors/InvalidCredentialsError";
 import { IAuthService } from "../interfaces/services/IAuthService";
 import { buildPublicUserDto } from "../mappers/user.mapper";
-import { RegisterDto, AuthResult, LoginDto, RefreshDto, TokenPair } from "../dtos/auth.dto";
+import { RegisterDto, AuthResult, LoginDto, RefreshDto, TokenPair, LogoutDto } from "../dtos/auth.dto";
 import { PublicUserDto } from "../dtos/user.dto";
 import { buildAccessTokenClaims, buildAuthResult, buildTokenPair } from "../mappers/auth.mapper";
-import { AccessTokenClaims } from "../types/claims";
 import { UserNotFoundError } from "../errors/UserNotFoundError";
 
 export default class AuthService implements IAuthService {
@@ -59,6 +58,11 @@ export default class AuthService implements IAuthService {
         const user = await this.userService.findById(userId);
         if (!user) throw new UserNotFoundError();
         return this.getAccessAndRefreshTokens(user.id, user.role);
+    }
+
+    async logout(logoutDto: LogoutDto): Promise<void> {
+        const { refreshTokenId } = logoutDto;
+        await this.tokenService.revokeRefreshToken(refreshTokenId);
     }
 
     private async getAccessAndRefreshTokens(userId: number, role: string): Promise<TokenPair> {

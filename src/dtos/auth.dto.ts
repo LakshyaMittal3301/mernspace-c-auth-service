@@ -17,6 +17,10 @@ export type RefreshDto = {
     refreshTokenId: string;
 };
 
+export type LogoutDto = {
+    refreshTokenId: string;
+};
+
 export type TokenPair = {
     accessToken: string;
     refreshToken: string;

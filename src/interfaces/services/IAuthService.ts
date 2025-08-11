@@ -1,4 +1,4 @@
-import { RegisterDto, AuthResult, LoginDto, RefreshDto, TokenPair } from "../../dtos/auth.dto";
+import { RegisterDto, AuthResult, LoginDto, RefreshDto, TokenPair, LogoutDto } from "../../dtos/auth.dto";
 import { PublicUserDto } from "../../dtos/user.dto";
 
 export interface IAuthService {
@@ -6,4 +6,5 @@ export interface IAuthService {
     login(loginDto: LoginDto): Promise<AuthResult>;
     whoAmI(userId: number): Promise<PublicUserDto>;
     refresh(refreshDto: RefreshDto): Promise<TokenPair>;
+    logout(logoutDto: LogoutDto): Promise<void>;
 }

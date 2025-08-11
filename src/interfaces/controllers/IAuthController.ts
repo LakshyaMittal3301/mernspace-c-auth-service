@@ -1,4 +1,10 @@
-import { RegisterRequest, LoginRequest, AuthenticatedRequest, RefreshRequest } from "../../types/requests";
+import {
+    RegisterRequest,
+    LoginRequest,
+    AuthenticatedRequest,
+    RefreshRequest,
+    AuthenticatedRefreshRequest,
+} from "../../types/requests";
 import { Response } from "express";
 
 export interface IAuthController {
@@ -6,4 +12,5 @@ export interface IAuthController {
     login(req: LoginRequest, res: Response): Promise<void>;
     self(req: AuthenticatedRequest, res: Response): Promise<void>;
     refresh(req: RefreshRequest, res: Response): Promise<void>;
+    logout(req: AuthenticatedRefreshRequest, res: Response): Promise<void>;
 }
