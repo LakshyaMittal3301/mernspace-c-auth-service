@@ -31,4 +31,5 @@ export type CreateManagerUserDto = {
     firstName: string;
     lastName: string;
     password: string;
+    tenantId: number;
 };

@@ -10,6 +10,7 @@ import AdminUserService from "../services/AdminUserService";
 import logger from "../config/logger";
 import createAdminUserValidator from "../validators/create-admin-user-validator";
 import PasswordService from "../services/PasswordService";
+import createManagerUserValidator from "../validators/create-manager-user-validator";
 
 // Repository
 const userRepository = AppDataSource.getRepository(User);
@@ -33,7 +34,9 @@ router.use(authenticate, (req: Request, res: Response, next: NextFunction) =>
 
 router.get("/users", (req, res) => ctrl.list(req, res));
 router.post("/users/admins", createAdminUserValidator, (req: Request, res: Response) => ctrl.createAdmin(req, res));
-// router.post("/users/managers", (req, res) => ctrl.);
+router.post("/users/managers", createManagerUserValidator, (req: Request, res: Response) =>
+    ctrl.createManager(req, res),
+);
 // router.get("/users/:id");
 // router.patch("/users/:id");
 // router.delete("/users/:id");
