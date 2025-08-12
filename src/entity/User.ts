@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Tenant } from "./Tenant";
 
 @Entity({ name: "users" })
 export class User {
@@ -25,4 +26,7 @@ export class User {
 
     @Column()
     role: string;
+
+    @ManyToOne(() => Tenant)
+    tenant: Tenant;
 }
