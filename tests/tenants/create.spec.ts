@@ -26,7 +26,7 @@ describe("POST /tenants", () => {
         await connection.dropDatabase();
         await connection.synchronize();
 
-        const userData = {
+        const adminData = {
             firstName: "lakshya",
             lastName: "mittal",
             email: "lakshya@gmail.com",
@@ -34,7 +34,7 @@ describe("POST /tenants", () => {
             role: Roles.ADMIN,
         };
 
-        adminUser = await createUser(connection, userData);
+        adminUser = await createUser(connection, adminData);
         adminUserAccessToken = jwks.token({
             sub: String(adminUser.id),
             role: adminUser.role,
@@ -82,6 +82,34 @@ describe("POST /tenants", () => {
             const response = await request(app).post(createTenantRoute).send(tenantData);
 
             expect(response.statusCode).toBe(401);
+
+            const tenantRepo = connection.getRepository(Tenant);
+            const tenants = await tenantRepo.find();
+
+            expect(tenants).toHaveLength(0);
+        });
+
+        it("should return 403 if user is not admin", async () => {
+            const managerData = {
+                firstName: "lakshya",
+                lastName: "mittal",
+                email: "lakshya1@gmail.com",
+                password: "password@123",
+                role: Roles.MANAGER,
+            };
+
+            const managerUser = await createUser(connection, managerData);
+            const managerAccessToken = jwks.token({
+                sub: String(managerUser.id),
+                role: managerUser.role,
+            });
+
+            const response = await request(app)
+                .post(createTenantRoute)
+                .set("Cookie", [`accessToken=${managerAccessToken}`])
+                .send(tenantData);
+
+            expect(response.statusCode).toBe(403);
 
             const tenantRepo = connection.getRepository(Tenant);
             const tenants = await tenantRepo.find();
