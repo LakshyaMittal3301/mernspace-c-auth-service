@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import { ITenantController } from "../interfaces/controllers/ITenantController";
 import { CreateTenantRequest } from "../types/requests";
 import { ITenantService } from "../interfaces/services/ITenantService";
@@ -24,7 +24,17 @@ export default class TenantController implements ITenantController {
             // return response
             res.status(201).json({ id: tenant.id });
         } catch (err) {
-            this.logger.error("Error creating tenant", { err });
+            this.logger.error("Error creating tenant", { error: err });
+            throw err;
+        }
+    }
+
+    async getAll(req: Request, res: Response): Promise<void> {
+        try {
+            const tenants = await this.tenantService.getAll();
+            res.status(200).json({ tenants });
+        } catch (err) {
+            this.logger.error("Error in getting all tenants", { error: err });
             throw err;
         }
     }

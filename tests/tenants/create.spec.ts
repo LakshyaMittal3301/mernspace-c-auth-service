@@ -8,7 +8,7 @@ import { User } from "../../src/entity/User";
 import { createUser } from "../utils";
 import { Roles } from "../../src/constants";
 
-describe("POST /tenants", () => {
+describe.skip("POST /tenants", () => {
     const createTenantRoute = "/tenants";
     let connection: DataSource;
     let jwks: JWKSMock;

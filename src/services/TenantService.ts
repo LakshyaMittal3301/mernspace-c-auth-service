@@ -1,7 +1,8 @@
 import { Repository } from "typeorm";
-import { CreateTenantDto } from "../dtos/tenant.dto";
+import { CreateTenantDto, PublicTenantDto } from "../dtos/tenant.dto";
 import { Tenant } from "../entity/Tenant";
 import { ITenantService } from "../interfaces/services/ITenantService";
+import { toPublicTenantDto } from "../mappers/tenant.mapper";
 
 export default class TenantService implements ITenantService {
     constructor(private tenantRepository: Repository<Tenant>) {}
@@ -9,5 +10,10 @@ export default class TenantService implements ITenantService {
     async create(createTenantDto: CreateTenantDto): Promise<Tenant> {
         const { name, address } = createTenantDto;
         return await this.tenantRepository.save({ name, address });
+    }
+
+    async getAll(): Promise<PublicTenantDto[]> {
+        const tenants = await this.tenantRepository.find({ order: { createdAt: "ASC" } });
+        return tenants.map(toPublicTenantDto);
     }
 }
