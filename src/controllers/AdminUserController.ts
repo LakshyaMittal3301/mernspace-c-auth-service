@@ -102,4 +102,16 @@ export default class AdminUserController implements IAdminUserController {
             throw err;
         }
     }
+
+    async delete(req: Request, res: Response): Promise<void> {
+        try {
+            const id = Number(req.params.id);
+            if (isNaN(id)) throw createHttpError(400, "Invalid user Id");
+            await this.adminUserService.delete(id);
+            res.sendStatus(204);
+        } catch (err) {
+            this.logger.error("Error deleting user", { error: err });
+            throw err;
+        }
+    }
 }

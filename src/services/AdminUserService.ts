@@ -102,4 +102,8 @@ export default class AdminUserService implements IAdminUserService {
         const saved = await this.userRepository.save(user);
         return buildAdminViewUserDto(saved);
     }
+
+    async delete(id: number): Promise<void> {
+        await this.userRepository.delete({ id });
+    }
 }

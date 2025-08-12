@@ -7,4 +7,5 @@ export interface IAdminUserController {
     createManager(req: CreateManagerUserRequest, res: Response): Promise<void>;
     getById(req: Request, res: Response): Promise<void>;
     update(req: UpdateUserRequest, res: Response): Promise<void>;
+    delete(req: Request, res: Response): Promise<void>;
 }
