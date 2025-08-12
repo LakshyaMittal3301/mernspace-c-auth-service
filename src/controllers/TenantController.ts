@@ -4,6 +4,7 @@ import { CreateTenantRequest } from "../types/requests";
 import { ITenantService } from "../interfaces/services/ITenantService";
 import { Logger } from "winston";
 import { validationResult } from "express-validator";
+import createHttpError from "http-errors";
 
 export default class TenantController implements ITenantController {
     constructor(
@@ -35,6 +36,25 @@ export default class TenantController implements ITenantController {
             res.status(200).json({ tenants });
         } catch (err) {
             this.logger.error("Error in getting all tenants", { error: err });
+            throw err;
+        }
+    }
+
+    async getById(req: Request, res: Response): Promise<void> {
+        try {
+            const id = Number(req.params.id);
+            if (isNaN(id)) {
+                throw createHttpError(400, "Invalid tenant id");
+            }
+
+            const tenant = await this.tenantService.getById(id);
+            if (!tenant) {
+                throw createHttpError(404, "Tenant not found");
+            }
+
+            res.status(200).json({ tenant });
+        } catch (err) {
+            this.logger.error("Error in getting tenant by id", { error: err });
             throw err;
         }
     }

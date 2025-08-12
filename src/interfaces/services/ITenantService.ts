@@ -4,4 +4,5 @@ import { Tenant } from "../../entity/Tenant";
 export interface ITenantService {
     create(createTenantDto: CreateTenantDto): Promise<Tenant>;
     getAll(): Promise<PublicTenantDto[]>;
+    getById(id: number): Promise<PublicTenantDto | null>;
 }

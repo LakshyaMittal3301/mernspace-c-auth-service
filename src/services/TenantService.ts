@@ -16,4 +16,9 @@ export default class TenantService implements ITenantService {
         const tenants = await this.tenantRepository.find({ order: { createdAt: "ASC" } });
         return tenants.map(toPublicTenantDto);
     }
+
+    async getById(id: number): Promise<PublicTenantDto | null> {
+        const tenant = await this.tenantRepository.findOne({ where: { id } });
+        return tenant ? toPublicTenantDto(tenant) : null;
+    }
 }
