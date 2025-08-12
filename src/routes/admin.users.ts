@@ -8,12 +8,15 @@ import { AppDataSource } from "../config/data-source";
 import { User } from "../entity/User";
 import AdminUserService from "../services/AdminUserService";
 import logger from "../config/logger";
+import createAdminUserValidator from "../validators/create-admin-user-validator";
+import PasswordService from "../services/PasswordService";
 
 // Repository
 const userRepository = AppDataSource.getRepository(User);
 
 // Service
-const adminUserService = new AdminUserService(userRepository);
+const passwordService = new PasswordService();
+const adminUserService = new AdminUserService(userRepository, passwordService);
 
 // Controller
 const ctrl = new AdminUserController(logger, adminUserService);
@@ -29,7 +32,8 @@ router.use(authenticate, (req: Request, res: Response, next: NextFunction) =>
 );
 
 router.get("/users", (req, res) => ctrl.list(req, res));
-// router.post("/users");
+router.post("/users/admins", createAdminUserValidator, (req: Request, res: Response) => ctrl.createAdmin(req, res));
+// router.post("/users/managers", (req, res) => ctrl.);
 // router.get("/users/:id");
 // router.patch("/users/:id");
 // router.delete("/users/:id");

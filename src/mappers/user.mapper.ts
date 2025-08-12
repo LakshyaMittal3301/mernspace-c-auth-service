@@ -1,4 +1,4 @@
-import { AdminUserDto, PublicUserDto } from "../dtos/user.dto";
+import { AdminViewUserDto, PublicUserDto } from "../dtos/user.dto";
 import { User } from "../entity/User";
 
 export const buildPublicUserDto = (u: User): PublicUserDto => {
@@ -12,7 +12,7 @@ export const buildPublicUserDto = (u: User): PublicUserDto => {
     };
 };
 
-export const buildAdminUserDto = (u: User): AdminUserDto => {
+export const buildAdminViewUserDto = (u: User): AdminViewUserDto => {
     return {
         id: u.id,
         firstName: u.firstName,

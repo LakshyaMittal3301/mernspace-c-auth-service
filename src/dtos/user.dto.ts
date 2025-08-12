@@ -15,6 +15,20 @@ export type PublicUserDto = {
     role: string;
 };
 
-export type AdminUserDto = PublicUserDto & {
+export type AdminViewUserDto = PublicUserDto & {
     tenantId: number | null;
+};
+
+export type CreateAdminUserDto = {
+    email: string;
+    firstName: string;
+    lastName: string;
+    password: string;
+};
+
+export type CreateManagerUserDto = {
+    email: string;
+    firstName: string;
+    lastName: string;
+    password: string;
 };
