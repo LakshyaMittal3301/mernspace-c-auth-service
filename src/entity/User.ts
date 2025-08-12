@@ -1,5 +1,14 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    ManyToOne,
+    OneToMany,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn,
+} from "typeorm";
 import { Tenant } from "./Tenant";
+import { RefreshToken } from "./RefreshToken";
 
 @Entity({ name: "users" })
 export class User {
@@ -29,4 +38,7 @@ export class User {
 
     @ManyToOne(() => Tenant)
     tenant: Tenant;
+
+    @OneToMany(() => RefreshToken, (rt) => rt.user)
+    refreshTokens: RefreshToken[];
 }
