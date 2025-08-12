@@ -37,7 +37,7 @@ export class User {
     role: string;
 
     @ManyToOne(() => Tenant)
-    tenant: Tenant;
+    tenant: Tenant | null;
 
     @OneToMany(() => RefreshToken, (rt) => rt.user)
     refreshTokens: RefreshToken[];
