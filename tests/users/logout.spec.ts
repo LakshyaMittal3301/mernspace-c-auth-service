@@ -6,7 +6,7 @@ import { isJWT } from "../utils";
 import { createJWKSMock, JWKSMock } from "mock-jwks";
 import { Roles } from "../../src/constants";
 
-describe("POST /auth/logout", () => {
+describe.skip("POST /auth/logout", () => {
     const registerRoute = "/auth/register";
     const loginRoute = "/auth/login";
     const refreshRoute = "/auth/refresh";

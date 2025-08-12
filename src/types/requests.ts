@@ -1,6 +1,7 @@
 import { Request } from "express";
 import { RegisterDto, LoginDto } from "../dtos/auth.dto";
 import { AccessTokenClaims, RefreshTokenClaims } from "./claims";
+import { CreateTenantDto } from "../dtos/tenant.dto";
 
 export type RegisterRequest = Request<{}, {}, RegisterDto>;
 
@@ -14,3 +15,5 @@ export type AuthenticatedRefreshRequest = Request & {
     auth: AccessTokenClaims;
     refresh: RefreshTokenClaims;
 };
+
+export type CreateTenantRequest = Request<{}, {}, CreateTenantDto>;

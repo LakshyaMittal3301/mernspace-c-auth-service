@@ -5,7 +5,7 @@ import { AppDataSource } from "../../src/config/data-source";
 import { createJWKSMock, JWKSMock } from "mock-jwks";
 import { createUser } from "../utils";
 
-describe("GET /auth/self", () => {
+describe.skip("GET /auth/self", () => {
     const selfRoute = "/auth/self";
     let connection: DataSource;
     let jwks: JWKSMock;

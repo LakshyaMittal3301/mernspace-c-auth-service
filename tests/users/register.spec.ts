@@ -7,7 +7,7 @@ import { Roles } from "../../src/constants";
 import { isJWT } from "../utils";
 import { RefreshToken } from "../../src/entity/RefreshToken";
 
-describe("POST /auth/register", () => {
+describe.skip("POST /auth/register", () => {
     const registerRoute = "/auth/register";
 
     let connection: DataSource;

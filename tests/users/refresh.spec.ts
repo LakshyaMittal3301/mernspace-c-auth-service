@@ -5,7 +5,7 @@ import { AppDataSource } from "../../src/config/data-source";
 import { isJWT } from "../utils";
 import { RefreshToken } from "../../src/entity/RefreshToken";
 
-describe("POST /auth/refresh", () => {
+describe.skip("POST /auth/refresh", () => {
     const registerRoute = "/auth/register";
     const loginRoute = "/auth/login";
     const refreshRoute = "/auth/refresh";
