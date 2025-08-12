@@ -3,6 +3,8 @@ export type CreateTenantDto = {
     address: string;
 };
 
+export type UpdateTenantDto = Partial<Pick<CreateTenantDto, "name" | "address">>;
+
 export type PublicTenantDto = {
     id: number;
     name: string;

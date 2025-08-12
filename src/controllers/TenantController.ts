@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { ITenantController } from "../interfaces/controllers/ITenantController";
-import { CreateTenantRequest } from "../types/requests";
+import { CreateTenantRequest, UpdateTenantRequest } from "../types/requests";
 import { ITenantService } from "../interfaces/services/ITenantService";
 import { Logger } from "winston";
 import { validationResult } from "express-validator";
@@ -55,6 +55,31 @@ export default class TenantController implements ITenantController {
             res.status(200).json({ tenant });
         } catch (err) {
             this.logger.error("Error in getting tenant by id", { error: err });
+            throw err;
+        }
+    }
+
+    async update(req: UpdateTenantRequest, res: Response): Promise<void> {
+        try {
+            const result = validationResult(req);
+            if (!result.isEmpty()) {
+                res.status(400).json({ errors: result.array() });
+                return;
+            }
+
+            const id = Number(req.params.id);
+
+            if (isNaN(id)) throw createHttpError(400, "Invalid tenant id");
+
+            if (!req.body || Object.keys(req.body).length === 0)
+                throw createHttpError(400, "No update fields provided");
+
+            const tenant = await this.tenantService.update(id, req.body);
+            if (!tenant) throw createHttpError(404, "Tenant not found");
+
+            res.status(200).json({ tenant });
+        } catch (err) {
+            this.logger.error("Error updating tenant", { error: err });
             throw err;
         }
     }

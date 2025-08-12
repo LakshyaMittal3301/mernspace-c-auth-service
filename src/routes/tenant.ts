@@ -7,9 +7,10 @@ import logger from "../config/logger";
 import { makeAuthenticateMiddleware } from "../middlewares/authenticate";
 import { Roles } from "../constants";
 import { canAccess } from "../middlewares/canAccess";
-import { AuthenticatedRequest } from "../types/requests";
+import { AuthenticatedRequest, UpdateTenantRequest } from "../types/requests";
 
 import createTenantValidator from "../validators/create-tenant-validator";
+import updateTenantValidator from "../validators/update-tenant-validator";
 
 // Repository
 const tenantRepository = AppDataSource.getRepository(Tenant);
@@ -49,6 +50,15 @@ router.get(
     (req: Request, res: Response, next: NextFunction) =>
         canAccess([Roles.ADMIN])(req as AuthenticatedRequest, res, next),
     (req, res) => tenantController.getById(req, res),
+);
+
+router.patch(
+    "/:id",
+    authenticate,
+    (req: Request, res: Response, next: NextFunction) =>
+        canAccess([Roles.ADMIN])(req as AuthenticatedRequest, res, next),
+    updateTenantValidator,
+    (req: Request, res: Response) => tenantController.update(req as UpdateTenantRequest, res),
 );
 
 export default router;
