@@ -27,46 +27,20 @@ const authenticate = makeAuthenticateMiddleware();
 // Router
 const router = express.Router();
 
-router.post(
-    "/",
-    authenticate,
-    (req: Request, res: Response, next: NextFunction) =>
-        canAccess([Roles.ADMIN])(req as AuthenticatedRequest, res, next),
-    createTenantValidator,
-    (req: Request, res: Response) => tenantController.create(req, res),
+router.use(authenticate, (req: Request, res: Response, next: NextFunction) =>
+    canAccess([Roles.ADMIN])(req as AuthenticatedRequest, res, next),
 );
 
-router.get(
-    "/",
-    authenticate,
-    (req: Request, res: Response, next: NextFunction) =>
-        canAccess([Roles.ADMIN])(req as AuthenticatedRequest, res, next),
-    (req, res) => tenantController.getAll(req, res),
+router.post("/", createTenantValidator, (req: Request, res: Response) => tenantController.create(req, res));
+
+router.get("/", (req, res) => tenantController.getAll(req, res));
+
+router.get("/:id", (req, res) => tenantController.getById(req, res));
+
+router.patch("/:id", updateTenantValidator, (req: Request, res: Response) =>
+    tenantController.update(req as UpdateTenantRequest, res),
 );
 
-router.get(
-    "/:id",
-    authenticate,
-    (req: Request, res: Response, next: NextFunction) =>
-        canAccess([Roles.ADMIN])(req as AuthenticatedRequest, res, next),
-    (req, res) => tenantController.getById(req, res),
-);
-
-router.patch(
-    "/:id",
-    authenticate,
-    (req: Request, res: Response, next: NextFunction) =>
-        canAccess([Roles.ADMIN])(req as AuthenticatedRequest, res, next),
-    updateTenantValidator,
-    (req: Request, res: Response) => tenantController.update(req as UpdateTenantRequest, res),
-);
-
-router.delete(
-    "/:id",
-    authenticate,
-    (req: Request, res: Response, next: NextFunction) =>
-        canAccess([Roles.ADMIN])(req as AuthenticatedRequest, res, next),
-    (req, res) => tenantController.delete(req, res),
-);
+router.delete("/:id", (req, res) => tenantController.delete(req, res));
 
 export default router;
