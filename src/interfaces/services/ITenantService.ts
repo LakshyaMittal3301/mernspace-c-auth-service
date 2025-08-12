@@ -6,4 +6,5 @@ export interface ITenantService {
     getAll(): Promise<PublicTenantDto[]>;
     getById(id: number): Promise<PublicTenantDto | null>;
     update(id: number, updateTenantDto: UpdateTenantDto): Promise<PublicTenantDto | null>;
+    delete(id: number): Promise<void>;
 }

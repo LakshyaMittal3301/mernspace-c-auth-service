@@ -32,4 +32,8 @@ export default class TenantService implements ITenantService {
         const saved = await this.tenantRepository.save(tenant);
         return toPublicTenantDto(saved);
     }
+
+    async delete(id: number): Promise<void> {
+        await this.tenantRepository.delete({ id });
+    }
 }

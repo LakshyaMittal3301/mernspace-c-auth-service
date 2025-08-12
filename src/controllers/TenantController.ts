@@ -83,4 +83,16 @@ export default class TenantController implements ITenantController {
             throw err;
         }
     }
+
+    async delete(req: Request, res: Response): Promise<void> {
+        try {
+            const id = Number(req.params.id);
+            if (isNaN(id)) throw createHttpError(400, "Invalid tenant id");
+            await this.tenantService.delete(id);
+            res.sendStatus(204);
+        } catch (err) {
+            this.logger.error("Error deleting tenant", { error: err });
+            throw err;
+        }
+    }
 }
