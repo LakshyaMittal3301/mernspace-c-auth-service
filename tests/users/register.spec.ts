@@ -25,7 +25,7 @@ describe.skip("POST /auth/register", () => {
         await connection.destroy();
     });
 
-    describe("All fields are present", () => {
+    describe.skip("All fields are present", () => {
         const userData = {
             firstName: "Lakshya",
             lastName: "Mittal",
@@ -140,7 +140,7 @@ describe.skip("POST /auth/register", () => {
         });
     });
 
-    describe("Fields are missing", () => {
+    describe.skip("Fields are missing", () => {
         it("should return 400 status code if email field is missing", async () => {
             const userData = {
                 firstName: "Lakshya",
@@ -206,7 +206,7 @@ describe.skip("POST /auth/register", () => {
         });
     });
 
-    describe("Fields are not in proper format", () => {
+    describe.skip("Fields are not in proper format", () => {
         it("should trim the email field", async () => {
             const properEmail = "abc@gmail.com";
             const userData = {

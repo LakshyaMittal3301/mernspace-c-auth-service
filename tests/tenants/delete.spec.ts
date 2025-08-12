@@ -60,7 +60,7 @@ describe.skip("DELETE /tenants/:id", () => {
         return repo.save(t);
     };
 
-    describe("Happy path & idempotency", () => {
+    describe.skip("Happy path & idempotency", () => {
         it("returns 204 and removes the tenant if it exists", async () => {
             const t = await seedTenant();
             const before = await connection.getRepository(Tenant).count();
@@ -124,7 +124,7 @@ describe.skip("DELETE /tenants/:id", () => {
         });
     });
 
-    describe("Invalid input", () => {
+    describe.skip("Invalid input", () => {
         it("400 when id is not a number", async () => {
             const res = await request(app)
                 .delete(route("abc"))
@@ -153,7 +153,7 @@ describe.skip("DELETE /tenants/:id", () => {
         });
     });
 
-    describe("Auth / RBAC", () => {
+    describe.skip("Auth / RBAC", () => {
         it("401 when unauthenticated", async () => {
             const res = await request(app).delete(route(1)).send();
             expect(res.statusCode).toBe(401);
@@ -201,7 +201,7 @@ describe.skip("DELETE /tenants/:id", () => {
         });
     });
 
-    describe("Invariants", () => {
+    describe.skip("Invariants", () => {
         it("does not create any new tenants as a side-effect", async () => {
             const before = await connection.getRepository(Tenant).count();
 

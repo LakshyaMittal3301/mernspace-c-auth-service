@@ -48,7 +48,7 @@ describe.skip("POST /auth/refresh", () => {
         };
     };
 
-    describe("Happy path", () => {
+    describe.skip("Happy path", () => {
         it("returns 200, rotates refresh token, and issues a new access token", async () => {
             const { cookies: initialCookies, userId } = await bootstrapUserAndLogin();
 
@@ -104,7 +104,7 @@ describe.skip("POST /auth/refresh", () => {
         });
     });
 
-    describe("Edge cases", () => {
+    describe.skip("Edge cases", () => {
         it("returns 401/400 if refreshToken cookie is missing", async () => {
             await bootstrapUserAndLogin();
 

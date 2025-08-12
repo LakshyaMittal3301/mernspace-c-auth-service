@@ -50,7 +50,7 @@ describe.skip("POST /tenants", () => {
         await connection.destroy();
     });
 
-    describe("Happy path", () => {
+    describe.skip("Happy path", () => {
         const tenantData = {
             name: "Tenant name",
             address: "Tenant address",
@@ -82,7 +82,7 @@ describe.skip("POST /tenants", () => {
         });
     });
 
-    describe("Validation errors", () => {
+    describe.skip("Validation errors", () => {
         it("400 when name is missing", async () => {
             const res = await request(app)
                 .post(createTenantRoute)
@@ -162,7 +162,7 @@ describe.skip("POST /tenants", () => {
         });
     });
 
-    describe("Auth / RBAC", () => {
+    describe.skip("Auth / RBAC", () => {
         const tenantData = { name: "T", address: "A" };
 
         it("401 when user is not authenticated (no cookies)", async () => {
@@ -245,7 +245,7 @@ describe.skip("POST /tenants", () => {
         });
     });
 
-    describe("Idempotency / invariants", () => {
+    describe.skip("Idempotency / invariants", () => {
         it("does not create a tenant on validation error", async () => {
             const bad = { name: "x".repeat(101), address: "ok" };
 

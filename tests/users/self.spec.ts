@@ -30,7 +30,7 @@ describe.skip("GET /auth/self", () => {
         await connection.destroy();
     });
 
-    describe("All fields are present", () => {
+    describe.skip("All fields are present", () => {
         const userData = {
             firstName: "lakshya",
             lastName: "mittal",

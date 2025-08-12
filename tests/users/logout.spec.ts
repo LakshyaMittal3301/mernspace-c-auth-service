@@ -76,7 +76,7 @@ describe.skip("POST /auth/logout", () => {
             // aud: "your-audience",
         });
 
-    describe("Happy path", () => {
+    describe.skip("Happy path", () => {
         it("clears auth cookies and revokes current session's refresh token", async () => {
             const { cookies, userId } = await registerAndLogin();
 
@@ -110,7 +110,7 @@ describe.skip("POST /auth/logout", () => {
         });
     });
 
-    describe("Edge cases", () => {
+    describe.skip("Edge cases", () => {
         it("requires an access token (no cookies => 401)", async () => {
             // With authenticate middleware on /logout, no access cookie should 401
             const res = await request(app).post(logoutRoute); // no Cookie header at all

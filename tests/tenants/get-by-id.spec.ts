@@ -61,7 +61,7 @@ describe.skip("GET /tenants/:id", () => {
         return repo.save(t);
     };
 
-    describe("Happy path", () => {
+    describe.skip("Happy path", () => {
         it("returns 200 and the tenant DTO by id", async () => {
             const t = await seedTenant();
 
@@ -100,7 +100,7 @@ describe.skip("GET /tenants/:id", () => {
         });
     });
 
-    describe("Not found / invalid input", () => {
+    describe.skip("Not found / invalid input", () => {
         it("404 when tenant does not exist", async () => {
             const res = await request(app)
                 .get(route(9999))
@@ -141,7 +141,7 @@ describe.skip("GET /tenants/:id", () => {
         });
     });
 
-    describe("Auth / RBAC", () => {
+    describe.skip("Auth / RBAC", () => {
         it("401 when unauthenticated", async () => {
             const res = await request(app).get(route(1)).send();
             expect(res.statusCode).toBe(401);
@@ -205,7 +205,7 @@ describe.skip("GET /tenants/:id", () => {
         });
     });
 
-    describe("Response shape", () => {
+    describe.skip("Response shape", () => {
         it("exposes only public fields (id, name, address, createdAt) by default", async () => {
             const t = await seedTenant();
 
