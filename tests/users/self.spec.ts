@@ -1,13 +1,9 @@
 import request from "supertest";
 import app from "../../src/app";
-import { DataSource, RepositoryNotTreeError } from "typeorm";
+import { DataSource } from "typeorm";
 import { AppDataSource } from "../../src/config/data-source";
 import { createJWKSMock, JWKSMock } from "mock-jwks";
-
-import { User } from "../../src/entity/User";
-import { Roles } from "../../src/constants";
-import { createUser, isJWT } from "../utils";
-import { RefreshToken } from "../../src/entity/RefreshToken";
+import { createUser } from "../utils";
 
 describe("GET /auth/self", () => {
     const selfRoute = "/auth/self";
