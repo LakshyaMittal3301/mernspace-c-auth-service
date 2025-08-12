@@ -33,3 +33,11 @@ export type CreateManagerUserDto = {
     password: string;
     tenantId: number;
 };
+
+export type UpdateUserDto = {
+    email?: string;
+    firstName?: string;
+    lastName?: string;
+    password?: string;
+    tenantId?: number;
+};

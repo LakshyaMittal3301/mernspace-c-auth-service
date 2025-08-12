@@ -2,7 +2,7 @@ import { Request } from "express";
 import { RegisterDto, LoginDto } from "../dtos/auth.dto";
 import { AccessTokenClaims, RefreshTokenClaims } from "./claims";
 import { CreateTenantDto, UpdateTenantDto } from "../dtos/tenant.dto";
-import { CreateAdminUserDto, CreateManagerUserDto } from "../dtos/user.dto";
+import { CreateAdminUserDto, CreateManagerUserDto, UpdateUserDto } from "../dtos/user.dto";
 
 export type RegisterRequest = Request<{}, {}, RegisterDto>;
 
@@ -22,3 +22,4 @@ export type UpdateTenantRequest = Request<{ id: string }, {}, UpdateTenantDto>;
 
 export type CreateAdminUserRequest = Request<{}, {}, CreateAdminUserDto>;
 export type CreateManagerUserRequest = Request<{}, {}, CreateManagerUserDto>;
+export type UpdateUserRequest = Request<{ id: string }, {}, UpdateUserDto>;
