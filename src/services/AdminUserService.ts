@@ -64,4 +64,10 @@ export default class AdminUserService implements IAdminUserService {
 
         return buildAdminViewUserDto(user);
     }
+
+    async getById(id: number): Promise<AdminViewUserDto | null> {
+        const user = await this.userRepository.findOne({ where: { id } });
+        if (!user) return null;
+        return buildAdminViewUserDto(user);
+    }
 }

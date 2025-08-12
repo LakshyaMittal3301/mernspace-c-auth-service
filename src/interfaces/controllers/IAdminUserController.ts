@@ -5,4 +5,5 @@ export interface IAdminUserController {
     list(req: Request, res: Response): Promise<void>;
     createAdmin(req: CreateAdminUserRequest, res: Response): Promise<void>;
     createManager(req: CreateManagerUserRequest, res: Response): Promise<void>;
+    getById(req: Request, res: Response): Promise<void>;
 }

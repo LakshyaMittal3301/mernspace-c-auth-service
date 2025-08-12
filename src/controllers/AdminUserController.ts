@@ -61,4 +61,20 @@ export default class AdminUserController implements IAdminUserController {
             throw err;
         }
     }
+
+    async getById(req: Request, res: Response): Promise<void> {
+        try {
+            const id = Number(req.params.id);
+            if (isNaN(id)) throw createHttpError(400, "Invalid user Id");
+
+            const user = await this.adminUserService.getById(id);
+
+            if (!user) throw createHttpError(404, "User not found");
+
+            res.status(200).json({ user });
+        } catch (err) {
+            this.logger.error("Error getting user by id", { error: err });
+            throw err;
+        }
+    }
 }

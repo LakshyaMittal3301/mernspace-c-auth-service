@@ -37,7 +37,7 @@ router.post("/users/admins", createAdminUserValidator, (req: Request, res: Respo
 router.post("/users/managers", createManagerUserValidator, (req: Request, res: Response) =>
     ctrl.createManager(req, res),
 );
-// router.get("/users/:id");
+router.get("/users/:id", (req: Request, res: Response) => ctrl.getById(req, res));
 // router.patch("/users/:id");
 // router.delete("/users/:id");
 
