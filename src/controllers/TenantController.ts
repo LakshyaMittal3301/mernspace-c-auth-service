@@ -3,6 +3,7 @@ import { ITenantController } from "../interfaces/controllers/ITenantController";
 import { CreateTenantRequest } from "../types/requests";
 import { ITenantService } from "../interfaces/services/ITenantService";
 import { Logger } from "winston";
+import { validationResult } from "express-validator";
 
 export default class TenantController implements ITenantController {
     constructor(
@@ -13,6 +14,11 @@ export default class TenantController implements ITenantController {
     async create(req: CreateTenantRequest, res: Response): Promise<void> {
         try {
             // Validate
+            const result = validationResult(req);
+            if (!result.isEmpty()) {
+                res.status(400).json({ errors: result.array() });
+                return;
+            }
             // Call service
             const tenant = await this.tenantService.create(req.body);
             // return response
