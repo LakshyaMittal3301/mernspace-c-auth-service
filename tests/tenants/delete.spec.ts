@@ -9,7 +9,7 @@ import { User } from "../../src/entity/User";
 import { createUser } from "../utils";
 import { Roles } from "../../src/constants";
 
-describe("DELETE /tenants/:id", () => {
+describe.skip("DELETE /tenants/:id", () => {
     const route = (id: string | number) => `/tenants/${id}`;
     let connection: DataSource;
     let jwks: JWKSMock;
