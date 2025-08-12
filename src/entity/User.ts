@@ -2,6 +2,7 @@ import {
     Column,
     CreateDateColumn,
     Entity,
+    JoinColumn,
     ManyToOne,
     OneToMany,
     PrimaryGeneratedColumn,
@@ -36,7 +37,11 @@ export class User {
     @Column()
     role: string;
 
-    @ManyToOne(() => Tenant)
+    @Column({ name: "tenantId", nullable: true })
+    tenantId: number | null;
+
+    @ManyToOne(() => Tenant, { nullable: true })
+    @JoinColumn({ name: "tenantId" })
     tenant: Tenant | null;
 
     @OneToMany(() => RefreshToken, (rt) => rt.user)

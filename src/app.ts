@@ -6,6 +6,7 @@ import authRouter from "./routes/auth";
 import cookieParser from "cookie-parser";
 import path from "path";
 import tenantRouter from "./routes/tenant";
+import adminUserRouter from "./routes/admin.users";
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.get("/ping", async (req, res) => {
 
 app.use("/auth", authRouter);
 app.use("/tenants", tenantRouter);
+app.use("/admin", adminUserRouter);
 
 app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {
     logger.error(err.message);

@@ -12,4 +12,9 @@ export type PublicUserDto = {
     lastName: string;
     email: string;
     createdAt: Date;
+    role: string;
+};
+
+export type AdminUserDto = PublicUserDto & {
+    tenantId: number | null;
 };
