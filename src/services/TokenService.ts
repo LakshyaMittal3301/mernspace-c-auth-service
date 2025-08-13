@@ -1,21 +1,25 @@
 import { sign } from "jsonwebtoken";
-import fs from "fs";
-import path from "path";
 import { Repository } from "typeorm";
 import { RefreshToken } from "../entity/RefreshToken";
 import { Config } from "../config";
 import { ITokenService } from "../interfaces/services/ITokenService";
 import { AccessTokenClaims, RefreshTokenClaims } from "../types/claims";
+import { SecretNotFoundError } from "../errors/SecretNotFoundError";
 
 export default class TokenService implements ITokenService {
-    private privateKey: Buffer;
+    private accessTokenPrivateKey: string | undefined;
+    private refreshTokenSecret: string | undefined;
 
     constructor(private refreshTokenRepository: Repository<RefreshToken>) {
-        this.privateKey = fs.readFileSync(path.join(__dirname, "../../certs/private.pem"));
+        this.accessTokenPrivateKey = Config.PRIVATE_KEY;
+        this.refreshTokenSecret = Config.REFRESH_TOKEN_SECRET;
     }
 
     generateAccessToken(claims: AccessTokenClaims): string {
-        return sign(claims, this.privateKey, {
+        if (!this.accessTokenPrivateKey) {
+            throw new SecretNotFoundError("Access Token Private Key");
+        }
+        return sign(claims, this.accessTokenPrivateKey, {
             algorithm: "RS256",
             expiresIn: "1h",
             issuer: "auth-service",
@@ -23,6 +27,9 @@ export default class TokenService implements ITokenService {
     }
 
     async generateRefreshToken(userId: number): Promise<string> {
+        if (!this.refreshTokenSecret) {
+            throw new SecretNotFoundError("Refresh Token Secret");
+        }
         const MS_IN_YEAR = 1000 * 60 * 60 * 24 * 365;
 
         const newRefreshTokenRecord = await this.refreshTokenRepository.save({
@@ -35,7 +42,7 @@ export default class TokenService implements ITokenService {
             jti: String(newRefreshTokenRecord.id),
         };
 
-        const refreshToken = sign(claims, Config.REFRESH_TOKEN_SECRET!, {
+        const refreshToken = sign(claims, this.refreshTokenSecret, {
             algorithm: "HS256",
             expiresIn: "1y",
             issuer: "auth-service",

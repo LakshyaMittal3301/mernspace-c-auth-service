@@ -67,9 +67,13 @@ export default class AuthService implements IAuthService {
 
     private async getAccessAndRefreshTokens(userId: number, role: string): Promise<TokenPair> {
         const accessTokenClaims = buildAccessTokenClaims(userId, role);
-        const accessToken = this.tokenService.generateAccessToken(accessTokenClaims);
-        const refreshToken = await this.tokenService.generateRefreshToken(userId);
-
-        return buildTokenPair(accessToken, refreshToken);
+        try {
+            const accessToken = this.tokenService.generateAccessToken(accessTokenClaims);
+            const refreshToken = await this.tokenService.generateRefreshToken(userId);
+            return buildTokenPair(accessToken, refreshToken);
+        } catch (err) {
+            this.logger.error("Error generating access and/or refresh token", { error: err });
+            throw err;
+        }
     }
 }

@@ -18,6 +18,7 @@ import { validationResult } from "express-validator";
 import createHttpError from "http-errors";
 import { UserAlreadyExistsError } from "../errors/UserAlreadyExistsError";
 import { InvalidCredentialsError } from "../errors/InvalidCredentialsError";
+import { SecretNotFoundError } from "../errors/SecretNotFoundError";
 
 export default class AuthController implements IAuthController {
     constructor(
@@ -38,7 +39,10 @@ export default class AuthController implements IAuthController {
             res.status(201).json({ id: user.id });
         } catch (err) {
             if (err instanceof UserAlreadyExistsError) {
-                throw createHttpError(400, err);
+                throw createHttpError(400, err.message);
+            }
+            if (err instanceof SecretNotFoundError) {
+                throw createHttpError(500, err.message);
             }
 
             // Internal Error
@@ -62,6 +66,9 @@ export default class AuthController implements IAuthController {
             if (err instanceof InvalidCredentialsError) {
                 throw createHttpError(401, err.message);
             }
+            if (err instanceof SecretNotFoundError) {
+                throw createHttpError(500, err.message);
+            }
 
             // Login Failed
             this.logger.error("User Login Failed", { error: err });
@@ -83,6 +90,9 @@ export default class AuthController implements IAuthController {
             this.setTokens(res, tokens);
             res.json({});
         } catch (err) {
+            if (err instanceof SecretNotFoundError) {
+                throw createHttpError(500, err.message);
+            }
             this.logger.error("Refresh failed, ", { error: err });
             throw createHttpError(400, "Refresh Failed");
         }
