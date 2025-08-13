@@ -1,4 +1,4 @@
-import { DataSource, Not } from "typeorm";
+import { DataSource } from "typeorm";
 import { AppDataSource } from "../../src/config/data-source";
 import request from "supertest";
 import app from "../../src/app";
@@ -239,7 +239,7 @@ describe.skip("PATCH /admin/users/:id", () => {
         it("400 when updating email to another user's email (uniqueness)", async () => {
             const { token } = await seedAdminForAuth();
 
-            const u1 = await createUser(connection, {
+            await createUser(connection, {
                 firstName: "A",
                 lastName: "One",
                 email: "one@example.com",

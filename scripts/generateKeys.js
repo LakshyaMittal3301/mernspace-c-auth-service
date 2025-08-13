@@ -1,4 +1,3 @@
-import crypto, { createPublicKey } from "crypto";
 import fs from "fs";
 
 const { privateKey, publicKey } = crypto.generateKeyPairSync("rsa", {
