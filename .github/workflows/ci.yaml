@@ -48,7 +48,7 @@ jobs:
             JWKS_URI: ${{ secrets.JWKS_URI }}
             # If you really need a private key file for tests, write it to disk:
             # PRIVATE_KEY is often multiline; prefer base64-encoding in secret and decode here.
-            PRIVATE_KEY_B64: ${{ secrets.PRIVATE_KEY }}
+            PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
 
             # Make CLIs non-interactive
             CI: true
