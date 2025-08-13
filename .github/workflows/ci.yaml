@@ -1,0 +1,141 @@
+name: CI
+
+on:
+    pull_request:
+        branches: [main]
+    push:
+        branches: [main]
+
+# Cancel redundant runs on the same branch
+concurrency:
+    group: ci-${{ github.ref }}
+    cancel-in-progress: true
+
+# Principle of least privilege; raise per-job if needed
+permissions:
+    contents: read
+
+jobs:
+    build-and-test:
+        name: Build & Test
+        runs-on: ubuntu-latest
+
+        # Spin up a disposable Postgres for tests (faster + no TEST_DB_* secrets needed)
+        services:
+            postgres:
+                image: postgres:16-alpine
+                env:
+                    POSTGRES_USER: test
+                    POSTGRES_PASSWORD: test
+                    POSTGRES_DB: auth_test
+                ports:
+                    - 5432:5432
+                options: >-
+                    --health-cmd="pg_isready -U test -d auth_test"
+                    --health-interval=10s
+                    --health-timeout=5s
+                    --health-retries=5
+
+        env:
+            # Point app/test code to the service DB
+            DB_HOST: localhost
+            DB_PORT: 5432
+            DB_USERNAME: test
+            DB_PASSWORD: test
+            DB_NAME: auth_test
+            # App secrets used in tests (if required by your code)
+            REFRESH_TOKEN_SECRET: ${{ secrets.REFRESH_TOKEN_SECRET }}
+            JWKS_URI: ${{ secrets.JWKS_URI }}
+            # If you really need a private key file for tests, write it to disk:
+            # PRIVATE_KEY is often multiline; prefer base64-encoding in secret and decode here.
+            PRIVATE_KEY_B64: ${{ secrets.PRIVATE_KEY }}
+
+            # Make CLIs non-interactive
+            CI: true
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  # Prefer .nvmrc if present; otherwise pick your LTS
+                  node-version-file: ".nvmrc"
+                  cache: npm
+
+            - name: Install
+              run: npm ci
+
+            # If you kept PRIVATE_KEY_B64 above:
+            # - name: Materialize private key
+            #   run: echo "${PRIVATE_KEY_B64}" | base64 -d > private.pem
+
+            - name: Run DB Migrations
+              run: npm run migration:run
+
+            - name: Test (with coverage)
+              run: npm test
+
+            - name: Build (TypeScript)
+              run: npm run build
+
+            # Run Sonar only where secrets are available (push on main)
+            - name: SonarCloud scan
+              if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+              uses: SonarSource/sonarcloud-github-action@v2
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+    build-and-push-docker:
+        name: Build & Push Docker Image
+        runs-on: ubuntu-latest
+        needs: build-and-test
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+
+        # Needs package write if you use GHCR; for Docker Hub, login via secrets is enough
+        permissions:
+            contents: read
+
+        env:
+            IMAGE_NAME: ecommerce/merstack_auth_service
+            IMAGE_TAG: build-${{ github.run_number }}
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Set up QEMU
+              uses: docker/setup-qemu-action@v3
+
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+
+            - name: Log in to Docker Hub
+              uses: docker/login-action@v3
+              with:
+                  username: ${{ secrets.DOCKER_USERNAME }}
+                  password: ${{ secrets.DOCKER_PASSWORD }}
+
+            # Optional: generate sane tags/labels automatically
+            - name: Docker meta
+              id: meta
+              uses: docker/metadata-action@v5
+              with:
+                  images: ${{ env.IMAGE_NAME }}
+                  tags: |
+                      type=raw,value=${{ env.IMAGE_TAG }}
+                      type=ref,event=branch
+                      type=sha
+
+            - name: Build and push
+              uses: docker/build-push-action@v6
+              with:
+                  context: .
+                  file: docker/prod/Dockerfile
+                  push: true
+                  tags: ${{ steps.meta.outputs.tags }}
+                  labels: ${{ steps.meta.outputs.labels }}
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max
