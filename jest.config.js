@@ -8,4 +8,5 @@ module.exports = {
     transform: {
         ...tsJestTransformCfg,
     },
+    collectCoverageFrom: ["src/**/*.ts", "!tests/**", "!src/migration/**"],
 };

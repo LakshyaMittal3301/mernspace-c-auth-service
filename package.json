@@ -20,7 +20,7 @@
         "start": "node dist/server.js",
         "format:check": "prettier . --check",
         "format:fix": "prettier . --write",
-        "test": "jest  --runInBand",
+        "test": "jest --no-cache --coverage --all --runInBand",
         "prepare": "husky",
         "migration:generate": "typeorm-ts-node-commonjs migration:generate",
         "migration:create": "typeorm-ts-node-commonjs migration:create",
