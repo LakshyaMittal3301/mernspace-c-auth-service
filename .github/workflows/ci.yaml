@@ -97,7 +97,7 @@ jobs:
             contents: read
 
         env:
-            IMAGE_NAME: ecommerce/merstack_auth_service
+            IMAGE_NAME: laskhyadockerid/merstack_auth_service
             IMAGE_TAG: build-${{ github.run_number }}
 
         steps:
