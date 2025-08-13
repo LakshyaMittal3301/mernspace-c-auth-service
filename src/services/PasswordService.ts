@@ -1,5 +1,5 @@
 import { IPasswordService } from "../interfaces/services/IPasswordService";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 export default class PasswordService implements IPasswordService {
     hashPassword(password: string): Promise<string> {
