@@ -5,7 +5,7 @@ import request from "supertest";
 import app from "../../src/app";
 import { createJWKSMock, JWKSMock } from "mock-jwks";
 import { Roles } from "../../src/constants";
-import { createUser } from "../utils";
+import { clearAllTablesExceptMigrations, createUser } from "../utils";
 import { User } from "../../src/entity/User";
 import { Tenant } from "../../src/entity/Tenant";
 import { RefreshToken } from "../../src/entity/RefreshToken";
@@ -21,12 +21,13 @@ describe("DELETE /admin/users/:id", () => {
 
     beforeAll(async () => {
         connection = await AppDataSource.initialize();
+        await connection.runMigrations();
         jwks = createJWKSMock("http://localhost:5501"); // must match Config.JWKS_URI in tests
     });
 
     beforeEach(async () => {
         stopJwksMock = jwks.start();
-        await connection.dropDatabase();
+        await clearAllTablesExceptMigrations(connection);
     });
 
     afterEach(async () => {

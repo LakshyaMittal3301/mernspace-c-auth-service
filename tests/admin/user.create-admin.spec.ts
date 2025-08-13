@@ -5,7 +5,7 @@ import request from "supertest";
 import app from "../../src/app";
 import { createJWKSMock, JWKSMock } from "mock-jwks";
 import { Roles } from "../../src/constants";
-import { createUser } from "../utils";
+import { clearAllTablesExceptMigrations, createUser } from "../utils";
 import { User } from "../../src/entity/User";
 
 describe("POST /admin/users/admins", () => {
@@ -19,12 +19,13 @@ describe("POST /admin/users/admins", () => {
 
     beforeAll(async () => {
         connection = await AppDataSource.initialize();
+        await connection.runMigrations();
         jwks = createJWKSMock("http://localhost:5501"); // MUST match Config.JWKS_URI in tests
     });
 
     beforeEach(async () => {
         stopJwksMock = jwks.start();
-        await connection.dropDatabase();
+        await clearAllTablesExceptMigrations(connection);
     });
 
     afterEach(async () => {

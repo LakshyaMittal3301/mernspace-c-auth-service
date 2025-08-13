@@ -6,7 +6,7 @@ import request from "supertest";
 import app from "../../src/app";
 import { Tenant } from "../../src/entity/Tenant";
 import { User } from "../../src/entity/User";
-import { createUser } from "../utils";
+import { clearAllTablesExceptMigrations, createUser } from "../utils";
 import { Roles } from "../../src/constants";
 
 describe("DELETE /tenants/:id", () => {
@@ -23,13 +23,14 @@ describe("DELETE /tenants/:id", () => {
 
     beforeAll(async () => {
         connection = await AppDataSource.initialize();
+        await connection.runMigrations();
         // MUST match Config.JWKS_URI in test env (e.g. http://localhost:5501)
         jwks = createJWKSMock("http://localhost:5501");
     });
 
     beforeEach(async () => {
         stopJwksMock = jwks.start();
-        await connection.dropDatabase();
+        await clearAllTablesExceptMigrations(connection);
 
         admin = await createUser(connection, {
             firstName: "Admin",

@@ -2,7 +2,7 @@ import request from "supertest";
 import app from "../../src/app";
 import { DataSource } from "typeorm";
 import { AppDataSource } from "../../src/config/data-source";
-import { isJWT } from "../utils";
+import { clearAllTablesExceptMigrations, isJWT } from "../utils";
 import { RefreshToken } from "../../src/entity/RefreshToken";
 
 describe("POST /auth/refresh", () => {
@@ -19,10 +19,11 @@ describe("POST /auth/refresh", () => {
 
     beforeAll(async () => {
         connection = await AppDataSource.initialize();
+        await connection.runMigrations();
     });
 
     beforeEach(async () => {
-        await connection.dropDatabase();
+        await clearAllTablesExceptMigrations(connection);
     });
 
     afterAll(async () => {

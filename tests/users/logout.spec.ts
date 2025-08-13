@@ -2,7 +2,7 @@ import request from "supertest";
 import app from "../../src/app";
 import { DataSource } from "typeorm";
 import { AppDataSource } from "../../src/config/data-source";
-import { isJWT } from "../utils";
+import { clearAllTablesExceptMigrations, isJWT } from "../utils";
 import { createJWKSMock, JWKSMock } from "mock-jwks";
 import { Roles } from "../../src/constants";
 
@@ -28,13 +28,14 @@ describe("POST /auth/logout", () => {
 
     beforeAll(async () => {
         connection = await AppDataSource.initialize();
+        await connection.runMigrations();
         // MUST match Config.JWKS_URI in test env (e.g. http://localhost:5501)
         jwks = createJWKSMock("http://localhost:5501");
     });
 
     beforeEach(async () => {
         stopJwksMock = jwks.start();
-        await connection.dropDatabase();
+        await clearAllTablesExceptMigrations(connection);
     });
 
     afterEach(async () => {

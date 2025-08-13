@@ -84,3 +84,20 @@ export const createUserWithHashedPassword = async (
         role,
     });
 };
+
+export const clearAllTablesExceptMigrations = async (dataSource: DataSource) => {
+    await dataSource.query(`
+        DO $$
+        DECLARE t RECORD;
+        BEGIN
+        FOR t IN
+            SELECT schemaname, tablename
+            FROM pg_tables
+            WHERE schemaname = 'public'
+            AND tablename NOT IN ('migrations','typeorm_metadata') -- 🔑 keep migration metadata
+        LOOP
+            EXECUTE format('TRUNCATE TABLE %I.%I RESTART IDENTITY CASCADE', t.schemaname, t.tablename);
+        END LOOP;
+        END$$;
+    `);
+};

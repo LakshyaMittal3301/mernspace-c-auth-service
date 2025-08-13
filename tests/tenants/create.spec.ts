@@ -5,7 +5,7 @@ import request from "supertest";
 import app from "../../src/app";
 import { Tenant } from "../../src/entity/Tenant";
 import { User } from "../../src/entity/User";
-import { createUser } from "../utils";
+import { clearAllTablesExceptMigrations, createUser } from "../utils";
 import { Roles } from "../../src/constants";
 
 describe("POST /tenants", () => {
@@ -21,13 +21,14 @@ describe("POST /tenants", () => {
 
     beforeAll(async () => {
         connection = await AppDataSource.initialize();
-        // MUST match Config.JWKS_URI in test env (e.g. http://localhost:5501)
+        await connection.runMigrations();
         jwks = createJWKSMock("http://localhost:5501");
     });
 
     beforeEach(async () => {
         stopJwksMock = jwks.start();
-        await connection.dropDatabase();
+
+        await clearAllTablesExceptMigrations(connection);
 
         const adminData = {
             firstName: "lakshya",

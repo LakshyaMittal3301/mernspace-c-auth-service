@@ -3,7 +3,7 @@ import app from "../../src/app";
 import { DataSource } from "typeorm";
 import { AppDataSource } from "../../src/config/data-source";
 import { createJWKSMock, JWKSMock } from "mock-jwks";
-import { createUser } from "../utils";
+import { clearAllTablesExceptMigrations, createUser } from "../utils";
 
 describe("GET /auth/self", () => {
     const selfRoute = "/auth/self";
@@ -13,12 +13,13 @@ describe("GET /auth/self", () => {
 
     beforeAll(async () => {
         connection = await AppDataSource.initialize();
+        await connection.runMigrations();
         jwks = createJWKSMock("http://localhost:5501");
     });
 
     beforeEach(async () => {
         stopJwksMock = jwks.start();
-        await connection.dropDatabase();
+        await clearAllTablesExceptMigrations(connection);
     });
 
     afterEach(async () => {
