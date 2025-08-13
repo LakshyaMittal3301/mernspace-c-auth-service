@@ -8,7 +8,7 @@ import { Roles } from "../../src/constants";
 import { createUser } from "../utils";
 import { User } from "../../src/entity/User";
 
-describe.skip("POST /admin/users/admins", () => {
+describe("POST /admin/users/admins", () => {
     const route = "/admin/users/admins";
     let connection: DataSource;
     let jwks: JWKSMock;
@@ -54,7 +54,7 @@ describe.skip("POST /admin/users/admins", () => {
         password: "StrongP@ssw0rd",
     };
 
-    describe.skip("Auth / RBAC", () => {
+    describe("Auth / RBAC", () => {
         it("401 when unauthenticated", async () => {
             const res = await request(app).post(route).send(validBody);
             expect(res.statusCode).toBe(401);
@@ -91,7 +91,7 @@ describe.skip("POST /admin/users/admins", () => {
         });
     });
 
-    describe.skip("Validation", () => {
+    describe("Validation", () => {
         it("400 when email is invalid", async () => {
             const { token } = await seedAdminForAuth();
             const res = await request(app)
@@ -157,7 +157,7 @@ describe.skip("POST /admin/users/admins", () => {
         });
     });
 
-    describe.skip("Happy path", () => {
+    describe("Happy path", () => {
         it("201, returns created admin DTO; password not leaked; role is ADMIN; tenantId is null", async () => {
             const { token } = await seedAdminForAuth();
 

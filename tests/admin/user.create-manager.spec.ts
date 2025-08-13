@@ -9,7 +9,7 @@ import { createUser } from "../utils";
 import { User } from "../../src/entity/User";
 import { Tenant } from "../../src/entity/Tenant";
 
-describe.skip("POST /admin/users/managers", () => {
+describe("POST /admin/users/managers", () => {
     const route = "/admin/users/managers";
     let connection: DataSource;
     let jwks: JWKSMock;

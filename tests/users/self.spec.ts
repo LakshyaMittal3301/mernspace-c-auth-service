@@ -5,7 +5,7 @@ import { AppDataSource } from "../../src/config/data-source";
 import { createJWKSMock, JWKSMock } from "mock-jwks";
 import { createUser } from "../utils";
 
-describe.skip("GET /auth/self", () => {
+describe("GET /auth/self", () => {
     const selfRoute = "/auth/self";
     let connection: DataSource;
     let jwks: JWKSMock;
@@ -30,7 +30,7 @@ describe.skip("GET /auth/self", () => {
         await connection.destroy();
     });
 
-    describe.skip("All fields are present", () => {
+    describe("All fields are present", () => {
         const userData = {
             firstName: "lakshya",
             lastName: "mittal",

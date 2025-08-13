@@ -9,7 +9,7 @@ import { User } from "../../src/entity/User";
 import { createUser } from "../utils";
 import { Roles } from "../../src/constants";
 
-describe.skip("PATCH /tenants/:id", () => {
+describe("PATCH /tenants/:id", () => {
     const route = (id: string | number) => `/tenants/${id}`;
     let connection: DataSource;
     let jwks: JWKSMock;
@@ -61,7 +61,7 @@ describe.skip("PATCH /tenants/:id", () => {
         return repo.save(t);
     };
 
-    describe.skip("Happy path", () => {
+    describe("Happy path", () => {
         it("updates a single field (address) and returns 200 with DTO", async () => {
             const t = await seedTenant();
 
@@ -116,7 +116,7 @@ describe.skip("PATCH /tenants/:id", () => {
         });
     });
 
-    describe.skip("Validation (length/format via update validator)", () => {
+    describe("Validation (length/format via update validator)", () => {
         it("accepts boundary lengths: name=100, address=255", async () => {
             const t = await seedTenant();
 
@@ -169,7 +169,7 @@ describe.skip("PATCH /tenants/:id", () => {
         });
     });
 
-    describe.skip("Controller-only check for empty body", () => {
+    describe("Controller-only check for empty body", () => {
         it("400 when no update fields provided (controller throws)", async () => {
             const t = await seedTenant();
 
@@ -186,7 +186,7 @@ describe.skip("PATCH /tenants/:id", () => {
         });
     });
 
-    describe.skip("Invalid id / Not found", () => {
+    describe("Invalid id / Not found", () => {
         it("400 when id is not a number", async () => {
             const res = await request(app)
                 .patch(route("abc"))
@@ -206,7 +206,7 @@ describe.skip("PATCH /tenants/:id", () => {
         });
     });
 
-    describe.skip("Auth / RBAC", () => {
+    describe("Auth / RBAC", () => {
         it("401 when unauthenticated", async () => {
             const res = await request(app).patch(route(1)).send({ address: "X" });
             expect(res.statusCode).toBe(401);
@@ -253,7 +253,7 @@ describe.skip("PATCH /tenants/:id", () => {
         });
     });
 
-    describe.skip("Invariants / disallowed fields", () => {
+    describe("Invariants / disallowed fields", () => {
         it("does not create a new tenant (only updates existing)", async () => {
             const before = await connection.getRepository(Tenant).count();
             await connection

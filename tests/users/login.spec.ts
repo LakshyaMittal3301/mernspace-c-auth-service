@@ -8,7 +8,7 @@ import { Roles } from "../../src/constants";
 import { isJWT } from "../utils";
 import { RefreshToken } from "../../src/entity/RefreshToken";
 
-describe.skip("POST /auth/login", () => {
+describe("POST /auth/login", () => {
     const loginRoute = "/auth/login";
     let connection: DataSource;
 
@@ -25,7 +25,7 @@ describe.skip("POST /auth/login", () => {
         await connection.destroy();
     });
 
-    describe.skip("Valid credentials", () => {
+    describe("Valid credentials", () => {
         const plainPassword = "strongPassword@123";
         const email = "lakshya@example.com";
 
@@ -94,7 +94,7 @@ describe.skip("POST /auth/login", () => {
         });
     });
 
-    describe.skip("Missing or malformed fields", () => {
+    describe("Missing or malformed fields", () => {
         it("should return 400 if email is missing", async () => {
             const res = await request(app).post(loginRoute).send({ password: "secret123" });
             expect(res.statusCode).toBe(400);
@@ -134,7 +134,7 @@ describe.skip("POST /auth/login", () => {
         });
     });
 
-    describe.skip("Invalid credentials", () => {
+    describe("Invalid credentials", () => {
         it("should return 401 if user does not exist", async () => {
             const res = await request(app).post(loginRoute).send({
                 email: "missing@site.com",
@@ -204,7 +204,7 @@ describe.skip("POST /auth/login", () => {
         });
     });
 
-    describe.skip("Database invariants", () => {
+    describe("Database invariants", () => {
         it("should not create a new user on login", async () => {
             const userRepo = connection.getRepository(User);
             const passwordHash = await bcrypt.hash("Secret!234", 10);

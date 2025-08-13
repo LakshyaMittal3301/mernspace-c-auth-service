@@ -7,7 +7,7 @@ import { Roles } from "../../src/constants";
 import { isJWT } from "../utils";
 import { RefreshToken } from "../../src/entity/RefreshToken";
 
-describe.skip("POST /auth/register", () => {
+describe("POST /auth/register", () => {
     const registerRoute = "/auth/register";
 
     let connection: DataSource;
@@ -25,7 +25,7 @@ describe.skip("POST /auth/register", () => {
         await connection.destroy();
     });
 
-    describe.skip("All fields are present", () => {
+    describe("All fields are present", () => {
         const userData = {
             firstName: "Lakshya",
             lastName: "Mittal",
@@ -140,7 +140,7 @@ describe.skip("POST /auth/register", () => {
         });
     });
 
-    describe.skip("Fields are missing", () => {
+    describe("Fields are missing", () => {
         it("should return 400 status code if email field is missing", async () => {
             const userData = {
                 firstName: "Lakshya",
@@ -206,7 +206,7 @@ describe.skip("POST /auth/register", () => {
         });
     });
 
-    describe.skip("Fields are not in proper format", () => {
+    describe("Fields are not in proper format", () => {
         it("should trim the email field", async () => {
             const properEmail = "abc@gmail.com";
             const userData = {

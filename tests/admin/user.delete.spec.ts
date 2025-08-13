@@ -10,7 +10,7 @@ import { User } from "../../src/entity/User";
 import { Tenant } from "../../src/entity/Tenant";
 import { RefreshToken } from "../../src/entity/RefreshToken";
 
-describe.skip("DELETE /admin/users/:id", () => {
+describe("DELETE /admin/users/:id", () => {
     const route = (id: number | string) => `/admin/users/${id}`;
     let connection: DataSource;
     let jwks: JWKSMock;
@@ -54,7 +54,7 @@ describe.skip("DELETE /admin/users/:id", () => {
         return repo.save(repo.create({ name, address: "Addr" }));
     };
 
-    describe.skip("Auth / RBAC", () => {
+    describe("Auth / RBAC", () => {
         it("401 when unauthenticated", async () => {
             const res = await request(app).delete(route(1)).send();
             expect(res.statusCode).toBe(401);
@@ -91,7 +91,7 @@ describe.skip("DELETE /admin/users/:id", () => {
         });
     });
 
-    describe.skip("Params / basic validation", () => {
+    describe("Params / basic validation", () => {
         it("400 when id is not a number", async () => {
             const { token } = await seedAdminForAuth();
             const res = await request(app)
@@ -102,7 +102,7 @@ describe.skip("DELETE /admin/users/:id", () => {
         });
     });
 
-    describe.skip("Not found vs idempotent behavior", () => {
+    describe("Not found vs idempotent behavior", () => {
         it("204 when user does not exist (idempotent delete)", async () => {
             const { token } = await seedAdminForAuth();
             const res = await request(app)
@@ -115,7 +115,7 @@ describe.skip("DELETE /admin/users/:id", () => {
         });
     });
 
-    describe.skip("Happy paths", () => {
+    describe("Happy paths", () => {
         it("204 and removes the user; does not affect others", async () => {
             const { token } = await seedAdminForAuth();
 
@@ -204,7 +204,7 @@ describe.skip("DELETE /admin/users/:id", () => {
         });
     });
 
-    describe.skip("Cascade delete of refresh tokens", () => {
+    describe("Cascade delete of refresh tokens", () => {
         it("deletes all refresh tokens belonging to the user (onDelete: CASCADE)", async () => {
             const { token } = await seedAdminForAuth();
 
@@ -249,7 +249,7 @@ describe.skip("DELETE /admin/users/:id", () => {
         });
     });
 
-    describe.skip("Policy: self-delete (choose your behavior)", () => {
+    describe("Policy: self-delete (choose your behavior)", () => {
         it("either 204 (allowed) or 403 (forbidden) when admin deletes themselves", async () => {
             const { admin, token } = await seedAdminForAuth();
 

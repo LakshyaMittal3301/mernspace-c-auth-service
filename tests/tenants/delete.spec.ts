@@ -9,7 +9,7 @@ import { User } from "../../src/entity/User";
 import { createUser } from "../utils";
 import { Roles } from "../../src/constants";
 
-describe.skip("DELETE /tenants/:id", () => {
+describe("DELETE /tenants/:id", () => {
     const route = (id: string | number) => `/tenants/${id}`;
     let connection: DataSource;
     let jwks: JWKSMock;
@@ -60,7 +60,7 @@ describe.skip("DELETE /tenants/:id", () => {
         return repo.save(t);
     };
 
-    describe.skip("Happy path & idempotency", () => {
+    describe("Happy path & idempotency", () => {
         it("returns 204 and removes the tenant if it exists", async () => {
             const t = await seedTenant();
             const before = await connection.getRepository(Tenant).count();
@@ -124,7 +124,7 @@ describe.skip("DELETE /tenants/:id", () => {
         });
     });
 
-    describe.skip("Invalid input", () => {
+    describe("Invalid input", () => {
         it("400 when id is not a number", async () => {
             const res = await request(app)
                 .delete(route("abc"))
@@ -153,7 +153,7 @@ describe.skip("DELETE /tenants/:id", () => {
         });
     });
 
-    describe.skip("Auth / RBAC", () => {
+    describe("Auth / RBAC", () => {
         it("401 when unauthenticated", async () => {
             const res = await request(app).delete(route(1)).send();
             expect(res.statusCode).toBe(401);
@@ -201,7 +201,7 @@ describe.skip("DELETE /tenants/:id", () => {
         });
     });
 
-    describe.skip("Invariants", () => {
+    describe("Invariants", () => {
         it("does not create any new tenants as a side-effect", async () => {
             const before = await connection.getRepository(Tenant).count();
 

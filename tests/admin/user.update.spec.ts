@@ -8,7 +8,7 @@ import { createUser } from "../utils";
 import { User } from "../../src/entity/User";
 import { Tenant } from "../../src/entity/Tenant";
 
-describe.skip("PATCH /admin/users/:id", () => {
+describe("PATCH /admin/users/:id", () => {
     const route = (id: number | string) => `/admin/users/${id}`;
     let connection: DataSource;
     let jwks: JWKSMock;
@@ -52,7 +52,7 @@ describe.skip("PATCH /admin/users/:id", () => {
         return repo.save(repo.create({ name, address: "Addr" }));
     };
 
-    describe.skip("Auth / RBAC", () => {
+    describe("Auth / RBAC", () => {
         it("401 when unauthenticated", async () => {
             const res = await request(app).patch(route(1)).send({ firstName: "X" });
             expect(res.statusCode).toBe(401);
@@ -92,7 +92,7 @@ describe.skip("PATCH /admin/users/:id", () => {
         });
     });
 
-    describe.skip("Params / basic request validation", () => {
+    describe("Params / basic request validation", () => {
         it("400 when id is not a number", async () => {
             const { token } = await seedAdminForAuth();
             const res = await request(app)
@@ -119,7 +119,7 @@ describe.skip("PATCH /admin/users/:id", () => {
         });
     });
 
-    describe.skip("Field validation (validator schema only)", () => {
+    describe("Field validation (validator schema only)", () => {
         it("400 when email is invalid", async () => {
             const { token } = await seedAdminForAuth();
             const u = await createUser(connection, {
@@ -208,7 +208,7 @@ describe.skip("PATCH /admin/users/:id", () => {
         });
     });
 
-    describe.skip("Not found", () => {
+    describe("Not found", () => {
         it("404 when target user does not exist", async () => {
             const { token } = await seedAdminForAuth();
             const res = await request(app)
@@ -219,7 +219,7 @@ describe.skip("PATCH /admin/users/:id", () => {
         });
     });
 
-    describe.skip("Business rules in service", () => {
+    describe("Business rules in service", () => {
         it("400 or 404 when setting tenantId to a non-existent tenant", async () => {
             const { token } = await seedAdminForAuth();
             const u = await createUser(connection, {
@@ -268,7 +268,7 @@ describe.skip("PATCH /admin/users/:id", () => {
         });
     });
 
-    describe.skip("Happy paths", () => {
+    describe("Happy paths", () => {
         it("200 updating basic fields (email/name) normalizes and trims; response is DTO; password not leaked", async () => {
             const { token } = await seedAdminForAuth();
             const u = await createUser(connection, {
@@ -442,7 +442,7 @@ describe.skip("PATCH /admin/users/:id", () => {
         });
     });
 
-    describe.skip("DB invariants", () => {
+    describe("DB invariants", () => {
         it("updates exactly one row and does not create a new user", async () => {
             const { token } = await seedAdminForAuth();
             const repo = connection.getRepository(User);

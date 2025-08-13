@@ -9,7 +9,7 @@ import { User } from "../../src/entity/User";
 import { createUser } from "../utils";
 import { Roles } from "../../src/constants";
 
-describe.skip("GET /tenants/:id", () => {
+describe("GET /tenants/:id", () => {
     const route = (id: string | number) => `/tenants/${id}`;
     let connection: DataSource;
     let jwks: JWKSMock;
@@ -61,7 +61,7 @@ describe.skip("GET /tenants/:id", () => {
         return repo.save(t);
     };
 
-    describe.skip("Happy path", () => {
+    describe("Happy path", () => {
         it("returns 200 and the tenant DTO by id", async () => {
             const t = await seedTenant();
 
@@ -100,7 +100,7 @@ describe.skip("GET /tenants/:id", () => {
         });
     });
 
-    describe.skip("Not found / invalid input", () => {
+    describe("Not found / invalid input", () => {
         it("404 when tenant does not exist", async () => {
             const res = await request(app)
                 .get(route(9999))
@@ -141,7 +141,7 @@ describe.skip("GET /tenants/:id", () => {
         });
     });
 
-    describe.skip("Auth / RBAC", () => {
+    describe("Auth / RBAC", () => {
         it("401 when unauthenticated", async () => {
             const res = await request(app).get(route(1)).send();
             expect(res.statusCode).toBe(401);
@@ -205,7 +205,7 @@ describe.skip("GET /tenants/:id", () => {
         });
     });
 
-    describe.skip("Response shape", () => {
+    describe("Response shape", () => {
         it("exposes only public fields (id, name, address, createdAt) by default", async () => {
             const t = await seedTenant();
 

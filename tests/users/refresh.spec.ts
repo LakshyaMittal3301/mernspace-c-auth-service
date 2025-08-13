@@ -5,7 +5,7 @@ import { AppDataSource } from "../../src/config/data-source";
 import { isJWT } from "../utils";
 import { RefreshToken } from "../../src/entity/RefreshToken";
 
-describe.skip("POST /auth/refresh", () => {
+describe("POST /auth/refresh", () => {
     const registerRoute = "/auth/register";
     const loginRoute = "/auth/login";
     const refreshRoute = "/auth/refresh";
@@ -48,7 +48,7 @@ describe.skip("POST /auth/refresh", () => {
         };
     };
 
-    describe.skip("Happy path", () => {
+    describe("Happy path", () => {
         it("returns 200, rotates refresh token, and issues a new access token", async () => {
             const { cookies: initialCookies, userId } = await bootstrapUserAndLogin();
 
@@ -104,7 +104,7 @@ describe.skip("POST /auth/refresh", () => {
         });
     });
 
-    describe.skip("Edge cases", () => {
+    describe("Edge cases", () => {
         it("returns 401/400 if refreshToken cookie is missing", async () => {
             await bootstrapUserAndLogin();
 

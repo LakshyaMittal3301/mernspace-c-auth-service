@@ -6,7 +6,7 @@ import { isJWT } from "../utils";
 import { createJWKSMock, JWKSMock } from "mock-jwks";
 import { Roles } from "../../src/constants";
 
-describe.skip("POST /auth/logout", () => {
+describe("POST /auth/logout", () => {
     const registerRoute = "/auth/register";
     const loginRoute = "/auth/login";
     const refreshRoute = "/auth/refresh";
@@ -76,7 +76,7 @@ describe.skip("POST /auth/logout", () => {
             // aud: "your-audience",
         });
 
-    describe.skip("Happy path", () => {
+    describe("Happy path", () => {
         it("clears auth cookies and revokes current session's refresh token", async () => {
             const { cookies, userId } = await registerAndLogin();
 
@@ -110,7 +110,7 @@ describe.skip("POST /auth/logout", () => {
         });
     });
 
-    describe.skip("Edge cases", () => {
+    describe("Edge cases", () => {
         it("requires an access token (no cookies => 401)", async () => {
             // With authenticate middleware on /logout, no access cookie should 401
             const res = await request(app).post(logoutRoute); // no Cookie header at all

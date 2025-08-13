@@ -9,7 +9,7 @@ import { User } from "../../src/entity/User";
 import { createUser } from "../utils";
 import { Roles } from "../../src/constants";
 
-describe.skip("GET /tenants", () => {
+describe("GET /tenants", () => {
     const getTenantsRoute = "/tenants";
     let connection: DataSource;
     let jwks: JWKSMock;
@@ -58,7 +58,7 @@ describe.skip("GET /tenants", () => {
         return repo.find({ order: { createdAt: "ASC" } });
     };
 
-    describe.skip("Happy path", () => {
+    describe("Happy path", () => {
         it("returns 200 and JSON with tenants array (empty list)", async () => {
             const res = await request(app)
                 .get(getTenantsRoute)
@@ -125,7 +125,7 @@ describe.skip("GET /tenants", () => {
         });
     });
 
-    describe.skip("Auth / RBAC", () => {
+    describe("Auth / RBAC", () => {
         it("401 when unauthenticated (no access token)", async () => {
             const res = await request(app).get(getTenantsRoute).send();
             expect(res.statusCode).toBe(401);
@@ -182,7 +182,7 @@ describe.skip("GET /tenants", () => {
         });
     });
 
-    describe.skip("Response shape invariants", () => {
+    describe("Response shape invariants", () => {
         it("returns only public DTO fields (id, name, address, createdAt) per tenant", async () => {
             await seedTenants([{ name: "OnlyPublic", address: "Addr", createdAt: new Date() }]);
 
