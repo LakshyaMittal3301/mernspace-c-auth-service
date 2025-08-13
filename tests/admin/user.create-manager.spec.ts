@@ -26,7 +26,6 @@ describe("POST /admin/users/managers", () => {
     beforeEach(async () => {
         stopJwksMock = jwks.start();
         await connection.dropDatabase();
-        await connection.synchronize();
     });
 
     afterEach(async () => {

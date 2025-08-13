@@ -28,7 +28,6 @@ describe("POST /tenants", () => {
     beforeEach(async () => {
         stopJwksMock = jwks.start();
         await connection.dropDatabase();
-        await connection.synchronize();
 
         const adminData = {
             firstName: "lakshya",

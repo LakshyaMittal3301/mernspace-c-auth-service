@@ -19,7 +19,6 @@ describe("GET /auth/self", () => {
     beforeEach(async () => {
         stopJwksMock = jwks.start();
         await connection.dropDatabase();
-        await connection.synchronize();
     });
 
     afterEach(async () => {

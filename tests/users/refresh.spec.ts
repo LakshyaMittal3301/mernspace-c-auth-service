@@ -23,7 +23,6 @@ describe("POST /auth/refresh", () => {
 
     beforeEach(async () => {
         await connection.dropDatabase();
-        await connection.synchronize();
     });
 
     afterAll(async () => {

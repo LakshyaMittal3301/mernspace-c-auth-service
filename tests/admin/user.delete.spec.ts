@@ -27,7 +27,6 @@ describe("DELETE /admin/users/:id", () => {
     beforeEach(async () => {
         stopJwksMock = jwks.start();
         await connection.dropDatabase();
-        await connection.synchronize();
     });
 
     afterEach(async () => {

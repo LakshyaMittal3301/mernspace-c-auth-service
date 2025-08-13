@@ -27,7 +27,6 @@ describe("GET /admin/users", () => {
     beforeEach(async () => {
         stopJwksMock = jwks.start();
         await connection.dropDatabase();
-        await connection.synchronize();
     });
 
     afterEach(async () => {

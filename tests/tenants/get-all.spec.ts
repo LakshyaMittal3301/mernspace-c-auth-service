@@ -30,7 +30,6 @@ describe("GET /tenants", () => {
     beforeEach(async () => {
         stopJwksMock = jwks.start();
         await connection.dropDatabase();
-        await connection.synchronize();
 
         // Admin user + token
         admin = await createUser(connection, {

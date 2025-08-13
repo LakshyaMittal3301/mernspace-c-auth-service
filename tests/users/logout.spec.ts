@@ -35,7 +35,6 @@ describe("POST /auth/logout", () => {
     beforeEach(async () => {
         stopJwksMock = jwks.start();
         await connection.dropDatabase();
-        await connection.synchronize();
     });
 
     afterEach(async () => {

@@ -30,7 +30,6 @@ describe("DELETE /tenants/:id", () => {
     beforeEach(async () => {
         stopJwksMock = jwks.start();
         await connection.dropDatabase();
-        await connection.synchronize();
 
         admin = await createUser(connection, {
             firstName: "Admin",
