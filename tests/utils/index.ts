@@ -1,7 +1,7 @@
 import { DataSource } from "typeorm";
 import { User } from "../../src/entity/User";
 import { Roles } from "../../src/constants";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 export const truncateTables = async (connection: DataSource) => {
     const entities = connection.entityMetadatas;
