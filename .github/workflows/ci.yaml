@@ -50,6 +50,11 @@ jobs:
             # PRIVATE_KEY is often multiline; prefer base64-encoding in secret and decode here.
             PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
 
+            ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL}}
+            ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD}}
+            ADMIN_FIRST_NAME: ${{ secrets.ADMIN_FIRST_NAME}}
+            ADMIN_LAST_NAME: ${{ secrets.ADMIN_LAST_NAME}}
+
             # Make CLIs non-interactive
             CI: true
 
