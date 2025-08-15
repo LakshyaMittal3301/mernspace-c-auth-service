@@ -19,6 +19,7 @@ const {
     ADMIN_PASSWORD,
     ADMIN_FIRST_NAME,
     ADMIN_LAST_NAME,
+    CORS_ORIGIN,
 } = process.env;
 
 export const Config = {
@@ -36,4 +37,5 @@ export const Config = {
     ADMIN_PASSWORD,
     ADMIN_FIRST_NAME: ADMIN_FIRST_NAME ?? "System",
     ADMIN_LAST_NAME: ADMIN_LAST_NAME ?? "Administrator",
+    CORS_ORIGIN: CORS_ORIGIN ?? "http://localhost",
 };

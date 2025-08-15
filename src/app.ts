@@ -7,8 +7,17 @@ import cookieParser from "cookie-parser";
 import path from "path";
 import tenantRouter from "./routes/tenant";
 import adminUserRouter from "./routes/admin.users";
+import cors from "cors";
+import { Config } from "./config";
 
 const app = express();
+
+app.use(
+    cors({
+        origin: [Config.CORS_ORIGIN],
+        credentials: true,
+    }),
+);
 
 const publicDir = path.join(__dirname, "..", "public");
 
