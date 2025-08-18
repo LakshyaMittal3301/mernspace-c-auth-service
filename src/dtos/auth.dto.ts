@@ -1,3 +1,4 @@
+import { PublicTenantDto } from "./tenant.dto";
 import { PublicUserDto } from "./user.dto";
 
 export type RegisterDto = {
@@ -29,4 +30,8 @@ export type TokenPair = {
 export type AuthResult = {
     user: PublicUserDto;
     tokens: TokenPair;
+};
+
+export type SelfDto = PublicUserDto & {
+    tenant?: PublicTenantDto | null;
 };

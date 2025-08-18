@@ -21,16 +21,20 @@ import express, { Request, Response } from "express";
 
 import { AuthenticatedRefreshRequest, AuthenticatedRequest, RefreshRequest } from "../types/requests";
 import { makeParseRefreshTokenMiddleware } from "../middlewares/parseRefreshToken";
+import { Tenant } from "../entity/Tenant";
+import TenantService from "../services/TenantService";
 
 // Repositories
 const userRepository = AppDataSource.getRepository(User);
 const tokenRepository = AppDataSource.getRepository(RefreshToken);
+const tenantRepository = AppDataSource.getRepository(Tenant);
 
 // Services
 const userService = new UserService(userRepository);
 const tokenService = new TokenService(tokenRepository);
 const passwordService = new PasswordService();
-const authService = new AuthService(logger, userService, passwordService, tokenService);
+const tenantService = new TenantService(tenantRepository);
+const authService = new AuthService(logger, userService, passwordService, tokenService, tenantService);
 
 // Controllers
 const authController = new AuthController(logger, authService);
