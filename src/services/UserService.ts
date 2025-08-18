@@ -26,6 +26,9 @@ export default class UserService implements IUserService {
     }
 
     async findById(id: number): Promise<User | null> {
-        return this.userRepository.findOne({ where: { id } });
+        return this.userRepository.findOne({
+            where: { id },
+            select: ["id", "firstName", "lastName", "email", "createdAt", "role", "tenantId"],
+        });
     }
 }

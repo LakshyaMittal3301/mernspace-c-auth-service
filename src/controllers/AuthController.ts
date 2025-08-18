@@ -19,6 +19,7 @@ import createHttpError from "http-errors";
 import { UserAlreadyExistsError } from "../errors/UserAlreadyExistsError";
 import { InvalidCredentialsError } from "../errors/InvalidCredentialsError";
 import { SecretNotFoundError } from "../errors/SecretNotFoundError";
+import { SelfExpand } from "../types/expand";
 
 export default class AuthController implements IAuthController {
     constructor(
@@ -77,8 +78,10 @@ export default class AuthController implements IAuthController {
     }
 
     async self(req: AuthenticatedRequest, res: Response): Promise<void> {
+        const expands = (req.query.expand as string | undefined)?.split(",").map((s) => s.trim() as SelfExpand) ?? [];
         const userId = req.auth.sub;
-        const user = await this.authService.whoAmI(Number(userId));
+
+        const user = await this.authService.self(Number(userId), expands);
         res.json(user);
     }
 

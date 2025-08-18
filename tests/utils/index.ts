@@ -63,12 +63,14 @@ export const createUserWithHashedPassword = async (
         email,
         password,
         role = Roles.CUSTOMER,
+        tenantId = undefined,
     }: {
         firstName: string;
         lastName: string;
         email: string;
         password: string;
         role?: string;
+        tenantId?: number;
     },
 ): Promise<User> => {
     const saltRounds = 10;
@@ -82,6 +84,7 @@ export const createUserWithHashedPassword = async (
         email,
         password: hashedPassword,
         role,
+        tenantId,
     });
 };
 

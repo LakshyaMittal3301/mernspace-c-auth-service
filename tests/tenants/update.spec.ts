@@ -6,7 +6,7 @@ import request from "supertest";
 import app from "../../src/app";
 import { Tenant } from "../../src/entity/Tenant";
 import { User } from "../../src/entity/User";
-import { clearAllTablesExceptMigrations, createUser } from "../utils";
+import { clearAllTablesExceptMigrations, createUserWithHashedPassword } from "../utils";
 import { Roles } from "../../src/constants";
 
 describe("PATCH /tenants/:id", () => {
@@ -32,7 +32,7 @@ describe("PATCH /tenants/:id", () => {
         stopJwksMock = jwks.start();
         await clearAllTablesExceptMigrations(connection);
 
-        admin = await createUser(connection, {
+        admin = await createUserWithHashedPassword(connection, {
             firstName: "Admin",
             lastName: "User",
             email: "admin@example.com",
@@ -233,7 +233,7 @@ describe("PATCH /tenants/:id", () => {
         });
 
         it("403 when non-admin calls the route", async () => {
-            const manager = await createUser(connection, {
+            const manager = await createUserWithHashedPassword(connection, {
                 firstName: "Mgr",
                 lastName: "User",
                 email: "mgr@example.com",

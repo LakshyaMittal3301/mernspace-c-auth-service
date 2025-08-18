@@ -5,10 +5,13 @@ import { IUserService } from "../interfaces/services/IUserService";
 import { InvalidCredentialsError } from "../errors/InvalidCredentialsError";
 import { IAuthService } from "../interfaces/services/IAuthService";
 import { buildPublicUserDto } from "../mappers/user.mapper";
-import { RegisterDto, AuthResult, LoginDto, RefreshDto, TokenPair, LogoutDto } from "../dtos/auth.dto";
+import { RegisterDto, AuthResult, LoginDto, RefreshDto, TokenPair, LogoutDto, SelfDto } from "../dtos/auth.dto";
 import { PublicUserDto } from "../dtos/user.dto";
 import { buildAccessTokenClaims, buildAuthResult, buildTokenPair } from "../mappers/auth.mapper";
 import { UserNotFoundError } from "../errors/UserNotFoundError";
+import { SELF_EXPAND_TO_ROLE_MAP, SelfExpand } from "../types/expand";
+import { ITenantService } from "../interfaces/services/ITenantService";
+import { toPublicTenantDto } from "../mappers/tenant.mapper";
 
 export default class AuthService implements IAuthService {
     constructor(
@@ -16,6 +19,7 @@ export default class AuthService implements IAuthService {
         private userService: IUserService,
         private passwordService: IPasswordService,
         private tokenService: ITokenService,
+        private tenantService: ITenantService,
     ) {}
 
     async register(registerDto: RegisterDto): Promise<AuthResult> {
@@ -50,6 +54,20 @@ export default class AuthService implements IAuthService {
         const user = await this.userService.findById(userId);
         if (!user) throw new UserNotFoundError();
         return buildPublicUserDto(user);
+    }
+
+    async self(userId: number, expands: SelfExpand[]): Promise<SelfDto> {
+        const user = await this.userService.findById(userId);
+        if (!user) throw new UserNotFoundError();
+
+        const publicUserDto = buildPublicUserDto(user);
+        const dto: SelfDto = { ...publicUserDto };
+
+        const wantsTenant = expands.includes("tenant");
+        if (wantsTenant && SELF_EXPAND_TO_ROLE_MAP["tenant"].includes(dto.role)) {
+            dto.tenant = user.tenantId ? await this.tenantService.getById(user.tenantId) : null;
+        }
+        return dto;
     }
 
     async refresh({ userId, refreshTokenId }: RefreshDto): Promise<TokenPair> {
