@@ -1,7 +1,14 @@
-import { AdminViewUserDto, CreateAdminUserDto, CreateManagerUserDto, UpdateUserDto } from "../../dtos/user.dto";
+import {
+    AdminViewUserDto,
+    CreateAdminUserDto,
+    CreateManagerUserDto,
+    ListUsersDto,
+    ListUsersResult,
+    UpdateUserDto,
+} from "../../dtos/user.dto";
 
 export interface IAdminUserService {
-    list(): Promise<AdminViewUserDto[]>;
+    list(listUserDto: ListUsersDto): Promise<ListUsersResult>;
     createAdmin(dto: CreateAdminUserDto): Promise<AdminViewUserDto>;
     createManager(dto: CreateManagerUserDto): Promise<AdminViewUserDto>;
     getById(id: number): Promise<AdminViewUserDto | null>;

@@ -41,3 +41,23 @@ export type UpdateUserDto = {
     password?: string;
     tenantId?: number;
 };
+
+export type SortField = "id" | "createdAt";
+export type SortOrder = "asc" | "desc";
+export type UserRole = "admin" | "manager" | "customer";
+
+export type ListUsersDto = {
+    pagination: { page: number; limit: number };
+    sort: { field: SortField; order: SortOrder };
+    filters: { q?: string; role?: string };
+};
+
+export type ListUsersResult = {
+    rows: AdminViewUserDto[];
+    page: number;
+    limit: number;
+    sort: SortField;
+    order: SortOrder;
+    total: number;
+    totalPages: number;
+};

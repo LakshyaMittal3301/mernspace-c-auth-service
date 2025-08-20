@@ -1,5 +1,12 @@
 import { Repository } from "typeorm";
-import { AdminViewUserDto, CreateAdminUserDto, CreateManagerUserDto, UpdateUserDto } from "../dtos/user.dto";
+import {
+    AdminViewUserDto,
+    CreateAdminUserDto,
+    CreateManagerUserDto,
+    ListUsersDto,
+    ListUsersResult,
+    UpdateUserDto,
+} from "../dtos/user.dto";
 import { IAdminUserService } from "../interfaces/services/IAdminUserService";
 import { User } from "../entity/User";
 import { buildAdminViewUserDto } from "../mappers/user.mapper";
@@ -16,9 +23,50 @@ export default class AdminUserService implements IAdminUserService {
         private passwordService: IPasswordService,
     ) {}
 
-    async list(): Promise<AdminViewUserDto[]> {
-        const users = await this.userRepository.find();
-        return users.map(buildAdminViewUserDto);
+    async list(dto: ListUsersDto): Promise<ListUsersResult> {
+        const { page, limit } = dto.pagination;
+        const { field, order } = dto.sort;
+        const { q, role } = dto.filters;
+
+        const queryBuilder = this.userRepository.createQueryBuilder("u");
+
+        if (role) {
+            queryBuilder.andWhere("u.role = :role", { role });
+        }
+        if (q) {
+            const like = `%${q.replace(/\s+/g, " ").trim()}%`;
+            queryBuilder.andWhere("(u.email ILIKE :like OR u.firstName ILIKE :like OR u.lastName ILIKE :like)", {
+                like,
+            });
+        }
+
+        const dir = order.toUpperCase() as "ASC" | "DESC";
+        if (field === "createdAt") {
+            queryBuilder.orderBy("u.createdAt", dir).addOrderBy("u.id", dir);
+        } else {
+            queryBuilder.orderBy("u.id", dir);
+        }
+
+        const skip = (page - 1) * limit;
+
+        const [rowsRaw, total] = await Promise.all([
+            queryBuilder.clone().skip(skip).take(limit).getMany(),
+            queryBuilder.clone().getCount(), // safe: same where-clause, ignores order/limit
+        ]);
+
+        const rows = rowsRaw.map(buildAdminViewUserDto);
+
+        const totalPages = Math.ceil(total / limit) || 1;
+
+        return {
+            rows,
+            page,
+            limit,
+            sort: field,
+            order,
+            total,
+            totalPages,
+        };
     }
 
     async createAdmin(dto: CreateAdminUserDto): Promise<AdminViewUserDto> {
