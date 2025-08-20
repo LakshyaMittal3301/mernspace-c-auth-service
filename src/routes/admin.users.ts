@@ -39,15 +39,17 @@ router.use(authenticate, (req: Request, res: Response, next: NextFunction) =>
 
 router.get("/users", listUsersValidator, handleValidation, (req: Request, res: Response) => ctrl.list(req, res));
 
-router.post("/users/admins", createAdminUserValidator, (req: Request, res: Response) => ctrl.createAdmin(req, res));
+router.post("/users/admins", createAdminUserValidator, handleValidation, (req: Request, res: Response) =>
+    ctrl.createAdmin(req, res),
+);
 
-router.post("/users/managers", createManagerUserValidator, (req: Request, res: Response) =>
+router.post("/users/managers", createManagerUserValidator, handleValidation, (req: Request, res: Response) =>
     ctrl.createManager(req, res),
 );
 
 router.get("/users/:id", (req: Request, res: Response) => ctrl.getById(req, res));
 
-router.patch("/users/:id", updateUserValidator, (req: Request, res: Response) =>
+router.patch("/users/:id", updateUserValidator, handleValidation, (req: Request, res: Response) =>
     ctrl.update(req as UpdateUserRequest, res),
 );
 
