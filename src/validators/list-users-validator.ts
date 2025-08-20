@@ -32,7 +32,7 @@ const listUsersValidator = checkSchema(
             isLength: { options: { max: 200 } },
             trim: true,
             customSanitizer: {
-                options: (v: string) => v.replace(/\s+/g, " ").replace(/[\u0000-\u001F\u007F]/g, ""), // collapse spaces & drop control chars
+                options: (v: string) => v.replace(/\s+/g, " "), // collapse spaces
             },
             errorMessage: "q must be a string up to 200 characters",
         },
