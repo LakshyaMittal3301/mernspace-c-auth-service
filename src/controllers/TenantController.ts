@@ -14,12 +14,6 @@ export default class TenantController implements ITenantController {
 
     async create(req: CreateTenantRequest, res: Response): Promise<void> {
         try {
-            // Validate
-            const result = validationResult(req);
-            if (!result.isEmpty()) {
-                res.status(400).json({ errors: result.array() });
-                return;
-            }
             // Call service
             const tenant = await this.tenantService.create(req.body);
             // return response
@@ -61,12 +55,6 @@ export default class TenantController implements ITenantController {
 
     async update(req: UpdateTenantRequest, res: Response): Promise<void> {
         try {
-            const result = validationResult(req);
-            if (!result.isEmpty()) {
-                res.status(400).json({ errors: result.array() });
-                return;
-            }
-
             const id = Number(req.params.id);
 
             if (isNaN(id)) throw createHttpError(400, "Invalid tenant id");

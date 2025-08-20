@@ -11,6 +11,7 @@ import { AuthenticatedRequest, UpdateTenantRequest } from "../types/requests";
 
 import createTenantValidator from "../validators/create-tenant-validator";
 import updateTenantValidator from "../validators/update-tenant-validator";
+import { handleValidation } from "../validators/handleValidation";
 
 // Repository
 const tenantRepository = AppDataSource.getRepository(Tenant);
@@ -31,13 +32,15 @@ router.use(authenticate, (req: Request, res: Response, next: NextFunction) =>
     canAccess([Roles.ADMIN])(req as AuthenticatedRequest, res, next),
 );
 
-router.post("/", createTenantValidator, (req: Request, res: Response) => tenantController.create(req, res));
+router.post("/", createTenantValidator, handleValidation, (req: Request, res: Response) =>
+    tenantController.create(req, res),
+);
 
 router.get("/", (req, res) => tenantController.getAll(req, res));
 
 router.get("/:id", (req, res) => tenantController.getById(req, res));
 
-router.patch("/:id", updateTenantValidator, (req: Request, res: Response) =>
+router.patch("/:id", updateTenantValidator, handleValidation, (req: Request, res: Response) =>
     tenantController.update(req as UpdateTenantRequest, res),
 );
 

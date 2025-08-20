@@ -40,12 +40,6 @@ export default class AdminUserController implements IAdminUserController {
 
     async createAdmin(req: CreateAdminUserRequest, res: Response): Promise<void> {
         try {
-            const result = validationResult(req);
-            if (!result.isEmpty()) {
-                res.status(400).json({ errors: result.array() });
-                return;
-            }
-
             const user = await this.adminUserService.createAdmin(req.body);
             res.status(201).json({ user });
         } catch (err) {
@@ -59,12 +53,6 @@ export default class AdminUserController implements IAdminUserController {
 
     async createManager(req: CreateManagerUserRequest, res: Response): Promise<void> {
         try {
-            const result = validationResult(req);
-            if (!result.isEmpty()) {
-                res.status(400).json({ errors: result.array() });
-                return;
-            }
-
             const user = await this.adminUserService.createManager(req.body);
             res.status(201).json({ user });
         } catch (err) {
@@ -93,12 +81,6 @@ export default class AdminUserController implements IAdminUserController {
 
     async update(req: UpdateUserRequest, res: Response): Promise<void> {
         try {
-            const result = validationResult(req);
-            if (!result.isEmpty()) {
-                res.status(400).json({ errors: result.array() });
-                return;
-            }
-
             const id = Number(req.params.id);
             if (isNaN(id)) throw createHttpError(400, "Invalid user Id");
 

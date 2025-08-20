@@ -29,12 +29,6 @@ export default class AuthController implements IAuthController {
 
     async register(req: RegisterRequest, res: Response): Promise<void> {
         try {
-            const result = validationResult(req);
-            if (!result.isEmpty()) {
-                res.status(400).json({ errors: result.array() });
-                return;
-            }
-
             const { user, tokens } = await this.authService.register(req.body);
             this.setTokens(res, tokens);
             res.status(201).json({ id: user.id });
@@ -54,12 +48,6 @@ export default class AuthController implements IAuthController {
 
     async login(req: LoginRequest, res: Response): Promise<void> {
         try {
-            const result = validationResult(req);
-            if (!result.isEmpty()) {
-                res.status(400).json({ errors: result.array() });
-                return;
-            }
-
             const { user, tokens } = await this.authService.login(req.body);
             this.setTokens(res, tokens);
             res.status(200).json({ id: user.id });

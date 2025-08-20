@@ -23,6 +23,7 @@ import { AuthenticatedRefreshRequest, AuthenticatedRequest, RefreshRequest } fro
 import { makeParseRefreshTokenMiddleware } from "../middlewares/parseRefreshToken";
 import { Tenant } from "../entity/Tenant";
 import TenantService from "../services/TenantService";
+import { handleValidation } from "../validators/handleValidation";
 
 // Repositories
 const userRepository = AppDataSource.getRepository(User);
@@ -48,8 +49,12 @@ const parseRefreshToken = makeParseRefreshTokenMiddleware();
 const router = express.Router();
 
 // Routes
-router.post("/register", registerValidator, (req: Request, res: Response) => authController.register(req, res));
-router.post("/login", loginValidator, (req: Request, res: Response) => authController.login(req, res));
+router.post("/register", registerValidator, handleValidation, (req: Request, res: Response) =>
+    authController.register(req, res),
+);
+router.post("/login", loginValidator, handleValidation, (req: Request, res: Response) =>
+    authController.login(req, res),
+);
 router.get("/self", authenticate, (req, res) => authController.self(req as AuthenticatedRequest, res));
 router.post("/refresh", validateRefreshToken, (req, res) => authController.refresh(req as RefreshRequest, res));
 router.post("/logout", authenticate, parseRefreshToken, (req, res) =>
