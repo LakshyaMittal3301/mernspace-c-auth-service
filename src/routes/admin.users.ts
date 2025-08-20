@@ -13,6 +13,8 @@ import PasswordService from "../services/PasswordService";
 import createManagerUserValidator from "../validators/create-manager-user-validator";
 import updateUserValidator from "../validators/update-user-validator";
 import { Tenant } from "../entity/Tenant";
+import listUsersValidator from "../validators/list-users-validator";
+import { handleValidation } from "../validators/handleValidation";
 
 // Repository
 const userRepository = AppDataSource.getRepository(User);
@@ -35,7 +37,7 @@ router.use(authenticate, (req: Request, res: Response, next: NextFunction) =>
     canAccess([Roles.ADMIN])(req as AuthenticatedRequest, res, next),
 );
 
-router.get("/users", (req, res) => ctrl.list(req, res));
+router.get("/users", listUsersValidator, handleValidation, (req: Request, res: Response) => ctrl.list(req, res));
 
 router.post("/users/admins", createAdminUserValidator, (req: Request, res: Response) => ctrl.createAdmin(req, res));
 

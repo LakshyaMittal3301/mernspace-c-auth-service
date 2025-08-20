@@ -2,11 +2,18 @@ import { Logger } from "winston";
 import { IAdminUserController } from "../interfaces/controllers/IAdminUserController";
 import { Request, Response } from "express";
 import { IAdminUserService } from "../interfaces/services/IAdminUserService";
-import { CreateAdminUserRequest, CreateManagerUserRequest, UpdateUserRequest } from "../types/requests";
-import { validationResult } from "express-validator";
+import {
+    CreateAdminUserRequest,
+    CreateManagerUserRequest,
+    ListUsersQuery,
+    ListUsersRequest,
+    UpdateUserRequest,
+} from "../types/requests";
+import { matchedData, validationResult } from "express-validator";
 import { UserAlreadyExistsError } from "../errors/UserAlreadyExistsError";
 import createHttpError from "http-errors";
 import { TenantNotFoundError } from "../errors/TenantNotFoundError";
+import { normalizeListUsersQuery } from "./normalizers/users.normalize";
 
 export default class AdminUserController implements IAdminUserController {
     constructor(
@@ -14,10 +21,17 @@ export default class AdminUserController implements IAdminUserController {
         private adminUserService: IAdminUserService,
     ) {}
 
-    async list(req: Request, res: Response): Promise<void> {
+    async list(req: ListUsersRequest, res: Response): Promise<void> {
         try {
-            const users = await this.adminUserService.list();
-            res.status(200).json({ users });
+            const queryData = matchedData(req, {
+                locations: ["query"],
+                includeOptionals: true,
+            }) as Partial<ListUsersQuery>;
+
+            const listUserDto = normalizeListUsersQuery(queryData);
+
+            const listUserResult = await this.adminUserService.list(listUserDto);
+            res.status(200).json(listUserResult);
         } catch (err) {
             this.logger.error("Error occured while fetching all users", { error: err });
             throw err;
