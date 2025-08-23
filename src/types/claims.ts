@@ -1,6 +1,7 @@
 export type AccessTokenClaims = {
     sub: string;
     role: string;
+    tenantId?: string;
 };
 
 export type RefreshTokenClaims = {

@@ -17,6 +17,8 @@ export const buildTokenPair = (accessToken: string, refreshToken: string): Token
     };
 };
 
-export const buildAccessTokenClaims = (userId: number, role: string): AccessTokenClaims => {
-    return { sub: String(userId), role };
+export const buildAccessTokenClaims = (userId: number, role: string, tenantId?: number): AccessTokenClaims => {
+    const claims: AccessTokenClaims = { sub: String(userId), role };
+    if (tenantId) claims.tenantId = String(tenantId);
+    return claims;
 };

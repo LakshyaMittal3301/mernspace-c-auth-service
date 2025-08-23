@@ -12,6 +12,8 @@ import { UserNotFoundError } from "../errors/UserNotFoundError";
 import { SELF_EXPAND_TO_ROLE_MAP, SelfExpand } from "../types/expand";
 import { ITenantService } from "../interfaces/services/ITenantService";
 import { toPublicTenantDto } from "../mappers/tenant.mapper";
+import { User } from "../entity/User";
+import { Roles } from "../constants";
 
 export default class AuthService implements IAuthService {
     constructor(
@@ -35,7 +37,7 @@ export default class AuthService implements IAuthService {
         });
         this.logger.info(`User created successfully`, { id: user.id });
 
-        const tokens = await this.getAccessAndRefreshTokens(user.id, user.role);
+        const tokens = await this.getAccessAndRefreshTokens(user);
         return buildAuthResult(user, tokens);
     }
 
@@ -46,7 +48,7 @@ export default class AuthService implements IAuthService {
         if (!user || !(await this.passwordService.comparePassword(password, user.password))) {
             throw new InvalidCredentialsError();
         }
-        const tokens = await this.getAccessAndRefreshTokens(user.id, user.role);
+        const tokens = await this.getAccessAndRefreshTokens(user);
         return buildAuthResult(user, tokens);
     }
 
@@ -75,7 +77,7 @@ export default class AuthService implements IAuthService {
 
         const user = await this.userService.findById(userId);
         if (!user) throw new UserNotFoundError();
-        return this.getAccessAndRefreshTokens(user.id, user.role);
+        return this.getAccessAndRefreshTokens(user);
     }
 
     async logout(logoutDto: LogoutDto): Promise<void> {
@@ -83,11 +85,19 @@ export default class AuthService implements IAuthService {
         await this.tokenService.revokeRefreshToken(refreshTokenId);
     }
 
-    private async getAccessAndRefreshTokens(userId: number, role: string): Promise<TokenPair> {
-        const accessTokenClaims = buildAccessTokenClaims(userId, role);
+    private async getAccessAndRefreshTokens(user: User): Promise<TokenPair> {
+        const mustIncludeTenant = user.role === Roles.MANAGER;
+        const tenantId = user.tenantId ?? undefined;
+
+        if (mustIncludeTenant && !tenantId) {
+            this.logger.error("Manager user missing tenantId; refusing to issue token", { userId: user.id });
+            throw new Error("Tenant not assigned for manager");
+        }
+
+        const accessTokenClaims = buildAccessTokenClaims(user.id, user.role, tenantId);
         try {
             const accessToken = this.tokenService.generateAccessToken(accessTokenClaims);
-            const refreshToken = await this.tokenService.generateRefreshToken(userId);
+            const refreshToken = await this.tokenService.generateRefreshToken(user.id);
             return buildTokenPair(accessToken, refreshToken);
         } catch (err) {
             this.logger.error("Error generating access and/or refresh token", { error: err });
