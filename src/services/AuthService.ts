@@ -6,12 +6,11 @@ import { InvalidCredentialsError } from "../errors/InvalidCredentialsError";
 import { IAuthService } from "../interfaces/services/IAuthService";
 import { buildPublicUserDto } from "../mappers/user.mapper";
 import { RegisterDto, AuthResult, LoginDto, RefreshDto, TokenPair, LogoutDto, SelfDto } from "../dtos/auth.dto";
-import { PublicUserDto } from "../dtos/user.dto";
 import { buildAccessTokenClaims, buildAuthResult, buildTokenPair } from "../mappers/auth.mapper";
 import { UserNotFoundError } from "../errors/UserNotFoundError";
 import { SELF_EXPAND_TO_ROLE_MAP, SelfExpand } from "../types/expand";
 import { ITenantService } from "../interfaces/services/ITenantService";
-import { toPublicTenantDto } from "../mappers/tenant.mapper";
+import { User } from "../entity/User";
 
 export default class AuthService implements IAuthService {
     constructor(
@@ -35,7 +34,7 @@ export default class AuthService implements IAuthService {
         });
         this.logger.info(`User created successfully`, { id: user.id });
 
-        const tokens = await this.getAccessAndRefreshTokens(user.id, user.role);
+        const tokens = await this.getAccessAndRefreshTokens(user);
         return buildAuthResult(user, tokens);
     }
 
@@ -46,14 +45,8 @@ export default class AuthService implements IAuthService {
         if (!user || !(await this.passwordService.comparePassword(password, user.password))) {
             throw new InvalidCredentialsError();
         }
-        const tokens = await this.getAccessAndRefreshTokens(user.id, user.role);
+        const tokens = await this.getAccessAndRefreshTokens(user);
         return buildAuthResult(user, tokens);
-    }
-
-    async whoAmI(userId: number): Promise<PublicUserDto> {
-        const user = await this.userService.findById(userId);
-        if (!user) throw new UserNotFoundError();
-        return buildPublicUserDto(user);
     }
 
     async self(userId: number, expands: SelfExpand[]): Promise<SelfDto> {
@@ -75,7 +68,7 @@ export default class AuthService implements IAuthService {
 
         const user = await this.userService.findById(userId);
         if (!user) throw new UserNotFoundError();
-        return this.getAccessAndRefreshTokens(user.id, user.role);
+        return this.getAccessAndRefreshTokens(user);
     }
 
     async logout(logoutDto: LogoutDto): Promise<void> {
@@ -83,11 +76,13 @@ export default class AuthService implements IAuthService {
         await this.tokenService.revokeRefreshToken(refreshTokenId);
     }
 
-    private async getAccessAndRefreshTokens(userId: number, role: string): Promise<TokenPair> {
-        const accessTokenClaims = buildAccessTokenClaims(userId, role);
+    private async getAccessAndRefreshTokens(user: User): Promise<TokenPair> {
+        const tenantId = user.tenantId ?? undefined;
+
+        const accessTokenClaims = buildAccessTokenClaims(user.id, user.role, tenantId);
         try {
             const accessToken = this.tokenService.generateAccessToken(accessTokenClaims);
-            const refreshToken = await this.tokenService.generateRefreshToken(userId);
+            const refreshToken = await this.tokenService.generateRefreshToken(user.id);
             return buildTokenPair(accessToken, refreshToken);
         } catch (err) {
             this.logger.error("Error generating access and/or refresh token", { error: err });
