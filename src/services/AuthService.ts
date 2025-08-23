@@ -6,14 +6,11 @@ import { InvalidCredentialsError } from "../errors/InvalidCredentialsError";
 import { IAuthService } from "../interfaces/services/IAuthService";
 import { buildPublicUserDto } from "../mappers/user.mapper";
 import { RegisterDto, AuthResult, LoginDto, RefreshDto, TokenPair, LogoutDto, SelfDto } from "../dtos/auth.dto";
-import { PublicUserDto } from "../dtos/user.dto";
 import { buildAccessTokenClaims, buildAuthResult, buildTokenPair } from "../mappers/auth.mapper";
 import { UserNotFoundError } from "../errors/UserNotFoundError";
 import { SELF_EXPAND_TO_ROLE_MAP, SelfExpand } from "../types/expand";
 import { ITenantService } from "../interfaces/services/ITenantService";
-import { toPublicTenantDto } from "../mappers/tenant.mapper";
 import { User } from "../entity/User";
-import { Roles } from "../constants";
 
 export default class AuthService implements IAuthService {
     constructor(
@@ -52,12 +49,6 @@ export default class AuthService implements IAuthService {
         return buildAuthResult(user, tokens);
     }
 
-    async whoAmI(userId: number): Promise<PublicUserDto> {
-        const user = await this.userService.findById(userId);
-        if (!user) throw new UserNotFoundError();
-        return buildPublicUserDto(user);
-    }
-
     async self(userId: number, expands: SelfExpand[]): Promise<SelfDto> {
         const user = await this.userService.findById(userId);
         if (!user) throw new UserNotFoundError();
@@ -86,13 +77,7 @@ export default class AuthService implements IAuthService {
     }
 
     private async getAccessAndRefreshTokens(user: User): Promise<TokenPair> {
-        const mustIncludeTenant = user.role === Roles.MANAGER;
         const tenantId = user.tenantId ?? undefined;
-
-        if (mustIncludeTenant && !tenantId) {
-            this.logger.error("Manager user missing tenantId; refusing to issue token", { userId: user.id });
-            throw new Error("Tenant not assigned for manager");
-        }
 
         const accessTokenClaims = buildAccessTokenClaims(user.id, user.role, tenantId);
         try {

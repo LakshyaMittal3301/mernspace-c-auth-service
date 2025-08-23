@@ -5,7 +5,6 @@ import { SelfExpand } from "../../types/expand";
 export interface IAuthService {
     register(registerDto: RegisterDto): Promise<AuthResult>;
     login(loginDto: LoginDto): Promise<AuthResult>;
-    whoAmI(userId: number): Promise<PublicUserDto>;
     self(userId: number, expands: SelfExpand[]): Promise<SelfDto>;
     refresh(refreshDto: RefreshDto): Promise<TokenPair>;
     logout(logoutDto: LogoutDto): Promise<void>;
